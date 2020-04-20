@@ -1,0 +1,83 @@
+/* 全局样式表 */
+html {
+  user-select: none;
+}
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  /* overflow-x: hidden; */
+}
+ul li {
+  list-style: none;
+}
+a {
+  text-decoration: none;
+}
+.el-breadcrumb {
+  margin-bottom: 15px;
+  font-size: 12px;
+}
+
+.el-card {
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15) !important;
+}
+
+.el-table {
+  margin-top: 15px;
+  font-size: 12px;
+}
+
+.el-pagination {
+  margin-top: 15px;
+}
+
+.el-steps {
+  margin: 15px 0;
+}
+
+.el-step__title {
+  font-size: 13px;
+}
+
+.ql-editor {
+  min-height: 300px;
+}
+/* 详情页的table栏字体 */
+/* 修改组件的默认样式 */
+.el-tabs__content {
+  padding: 20px 10px !important;
+}
+.el-collapse-item__header {
+  background-color: #e4f4fe !important;
+  font-size: 18px !important;
+  font-weight: 900 !important;
+}
+.el-tabs__item {
+  font-size: 20px !important;
+  font-weight: 900 !important;
+}
+.el-icon-arrow-right:before {
+  color: #409eff;
+}
+.el-collapse-item__content {
+  padding-bottom: 0px !important;
+}
+/* 卡片 */
+.el-card__body {
+  padding: 10px 20px !important;
+}
+.opus-item .el-input__inner {
+  height: 50px !important;
+}
+.sizewu {
+  height: 50px !important;
+}
+.buttshi {
+  height: 39px !important;
+}
+.elmenli {
+  border-bottom: none !important;
+}
