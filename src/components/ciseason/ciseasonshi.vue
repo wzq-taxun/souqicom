@@ -6,11 +6,11 @@
         <div class="blockshanghe">
           <div class="shangheader">
             <div class="leftheader">
-              <div class="leftheaderfirst">
+              <h1 class="leftheaderfirst">
                 <router-link style="display:block; width: 100%;height:100%" to="/">
                   <img src="../../assets/image/logotou.png" alt />
                 </router-link>
-              </div>
+              </h1>
             </div>
             <!-- 中部输入框 -->
             <div class="zhongbushu">
@@ -118,7 +118,7 @@
                 <el-pagination
                   @current-change="handleCurrentChange"
                   :current-page="queryInfo.pagenum"
-                  :page-size="queryInfo.pagesize"
+                  :pager-count="11"
                   layout="prev, pager, next"
                   :total="total"
                   background
@@ -147,8 +147,7 @@ export default {
       cilistbiaoxin: ['上市公司', '港股公司', '新三板公司'],
       // 分页数据
       queryInfo: {
-        pagenum: 1,
-        pagesize: 10
+        pagenum: 1
       },
       // 总数据条数
       total: 0,
@@ -156,8 +155,8 @@ export default {
       tableData: [],
       // 表格加载效果可以通过数据请求前后控制lodaing的真假(+++++++)
       loading: false,
-      // 所有表格数据
-      yuantablelist: [],
+      // // 所有表格数据
+      // yuantablelist: [],
       // --------------------------------
       // 公司名字
       shangshiall: ['上市', '港股', '新三板'],
@@ -192,9 +191,6 @@ export default {
     turnToRequestPage(cell) {
       // console.log(cell)
       this.$router.push({ name: 'seadetail', params: { seadetail: `${cell.id}.html`, biao: this.flad } })
-      // let idk = parseInt(cell.id)
-      // const { data: res } = await this.$http.get(`enterprise/A/detailed/${idk}`)
-      // console.log(res)
     },
     // 开启加载的函数(+++++)
     openloding() {
@@ -205,74 +201,36 @@ export default {
         this.loading = false
       }, 10000)
     },
-    // 页面加载的时候请求
-    async getgupaiolist() {
-      if (this.flad === 0) {
-        this.openloding() // 控制lodaing的真假(+++++++)
-        // 上市表格请求
-        const { data: res } = await this.$http.post('enterprise/A/')
-        // console.log(res)
-        if (res.status !== 0) return this.$message.error('获取失败')
-        // 先把原始值进行保存
-        this.yuantablelist = res.results
-        this.total = res.results.length
-        // 将页码赋值
-        if (window.sessionStorage.getItem('newPage')) {
-          this.queryInfo.pagenum = parseInt(window.sessionStorage.getItem('newPage'))
-          this.handleCurrentChange(this.queryInfo.pagenum)
-        } else {
-          // console.log(res.results.slice(0, 10))
-          let newshitime = res.results.slice(0, 10)
-          for (let i = 0; i < newshitime.length; i++) {
-            newshitime[i].stock_date = newshitime[i].stock_date.split(' ')[0]
-          }
-          this.tableData = newshitime
-        }
-        // 控制lodaing的真假(+++++++)
-        this.loading = false
-      } else if (this.flad === 1) {
-        this.openloding()
-        // 港股信息表格展示：
-        const { data: res } = await this.$http.post('enterprise/G/')
-        // console.log(res)
-        if (res.status !== 0) return this.$message.error('获取失败')
-        // 先把原始值进行保存
-        this.yuantablelist = res.results
-        this.total = res.results.length
-        // 将页码赋值
-        if (window.sessionStorage.getItem('newPage')) {
-          this.queryInfo.pagenum = parseInt(window.sessionStorage.getItem('newPage'))
-          this.handleCurrentChange(this.queryInfo.pagenum)
-        } else {
-          let newshitime = res.results.slice(0, 10)
-          for (let i = 0; i < newshitime.length; i++) {
-            newshitime[i].stock_date = newshitime[i].stock_date.split(' ')[0]
-          }
-          this.tableData = newshitime
-        }
-        this.loading = false
-      } else {
-        this.openloding()
-        // 新三板信息表格展示：
-        const { data: res } = await this.$http.post('enterprise/XSB/')
-        // console.log(res)
-        if (res.status !== 0) return this.$message.error('获取失败')
-        // 先把原始值进行保存
-        this.yuantablelist = res.results
-        this.total = res.results.length
-        // 将页码赋值
-        if (window.sessionStorage.getItem('newPage')) {
-          this.queryInfo.pagenum = parseInt(window.sessionStorage.getItem('newPage'))
-          this.handleCurrentChange(this.queryInfo.pagenum)
-        } else {
-          let newshitime = res.results.slice(0, 10)
-          for (let i = 0; i < newshitime.length; i++) {
-            newshitime[i].stock_date = newshitime[i].stock_date.split(' ')[0]
-          }
-          this.tableData = newshitime
-        }
-        this.loading = false
+    // 封装请求
+    async gettablelist(value1, value2) {
+      this.openloding() // 控制lodaing的真假(+++++++)
+      // 上市表格请求
+      const { data: res } = await this.$http.get(value1, value2)
+      // console.log(res)
+      if (res.status !== 0) return this.$message.error('获取失败')
+      let newshitime = res.results.data
+      for (let i = 0; i < newshitime.length; i++) {
+        newshitime[i].stock_date = newshitime[i].stock_date.split(' ')[0]
       }
+      this.tableData = newshitime
+      let strr = res.results.contacts.split(' ')[res.results.contacts.split(' ').length - 1]
+      this.total = parseInt(strr.substring(0, strr.length - 1)) * 10
+      this.loading = false
+    },
+    // 页面加载的时候请求
+    getgupaiolist() {
+      if (this.flad === 0) {
+        this.gettablelist('enterprise/A/', { params: { page: this.queryInfo.pagenum } })
+      } else if (this.flad === 1) {
+        this.gettablelist('enterprise/G/', { params: { page: this.queryInfo.pagenum } })
+      } else {
+        this.gettablelist('enterprise/XSB/', { params: { page: this.queryInfo.pagenum } })
+      }
+      // 将页码赋值
+      // if (window.sessionStorage.getItem('newPage')) {
+      //   this.queryInfo.pagenum = parseInt(window.sessionStorage.getItem('newPage'))
+      //   this.handleCurrentChange(this.queryInfo.pagenum)
+      // }
     },
     // 切换表格
     qiehuan(valzhi) {
@@ -285,23 +243,22 @@ export default {
         params: newQuery
       }
       this.$router.push(routeParam)
-      // 先清除临时存储的 newPage
-      window.sessionStorage.removeItem('newPage')
-      this.getgupaiolist()
+      // // 先清除临时存储的 newPage
+      // window.sessionStorage.removeItem('newPage')
       this.queryInfo.pagenum = 1
+      this.getgupaiolist()
     },
-    handleCurrentChange(newPage) {
-      // if (newPage > 5) {
-      //   this.yantoken()
-      // }
+    async handleCurrentChange(newPage) {
       this.queryInfo.pagenum = newPage
       // 页码保存到sessionStorage中
-      window.sessionStorage.setItem('newPage', newPage)
-      let newshitime = this.yuantablelist.slice(newPage * 10 - 10, newPage * 10)
-      for (let i = 0; i < newshitime.length; i++) {
-        newshitime[i].stock_date = newshitime[i].stock_date.split(' ')[0]
+      // window.sessionStorage.setItem('newPage', newPage)
+      if (this.flad === 0) {
+        this.gettablelist('enterprise/A/', { params: { page: this.queryInfo.pagenum } })
+      } else if (this.flad === 1) {
+        this.gettablelist('enterprise/G/', { params: { page: this.queryInfo.pagenum } })
+      } else {
+        this.gettablelist('enterprise/XSB/', { params: { page: this.queryInfo.pagenum } })
       }
-      this.tableData = newshitime
     },
     detailogo() {
       // 去登录页面
@@ -375,7 +332,7 @@ export default {
   },
   beforeDestroy() {
     // 页面销毁前 清除 临时存储的值
-    window.sessionStorage.removeItem('newPage')
+    // window.sessionStorage.removeItem('newPage')
   }
 }
 </script>

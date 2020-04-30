@@ -1,4 +1,7 @@
+
+// const path = require('path')
 const webpack = require('webpack')
+// const PrerenderSPAPlugin = require('prerender-spa-plugin')
 module.exports = {
   assetsDir: 'assets',
   indexPath: 'index.html',
@@ -12,6 +15,9 @@ module.exports = {
     config.plugin('provide').use(webpack.ProvidePlugin, [{
       'window.Quill': 'quill'
     }])
+    config
+      .plugin('webpack-bundle-analyzer')
+      .use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin)
     // 发布模式
     config.when(process.env.NODE_ENV === 'production', config => {
       config.entry('app').clear().add('./src/main-prod.js')
@@ -20,7 +26,8 @@ module.exports = {
         'vue-router': 'VueRouter',
         axios: 'axios',
         lodash: '_',
-        nprogress: 'NProgress'
+        nprogress: 'NProgress',
+        'element-ui': 'ELEMENT'
       })
       config.plugin('html').tap(args => {
         args[0].isProd = true
@@ -48,5 +55,13 @@ module.exports = {
         return assetFilename.endsWith('.js')
       }
     }
+    // plugins: [
+    //   new PrerenderSPAPlugin({
+    //     // 指定构建好的文件目录
+    //     staticDir: path.join(__dirname, 'dist'),
+    //     // 指定需要预渲染的的页面的路由
+    //     routes: ['/', '/user_register', '/user_userden', '/user_forgetmi', '/people', '/articlewe', '/todaytitle']
+    //   })
+    // ]
   }
 }

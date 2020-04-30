@@ -5,11 +5,11 @@
         <div class="blockshanghe">
           <div class="shangheader">
             <div class="leftheader">
-              <div class="leftheaderfirst">
+              <h1 class="leftheaderfirst">
                 <router-link style="display:block; width: 100%;height:100%" to="/">
                   <img src="../../assets/image/logotou.png" alt />
                 </router-link>
-              </div>
+              </h1>
             </div>
             <!-- 中部输入框 -->
             <div class="zhongbushu">

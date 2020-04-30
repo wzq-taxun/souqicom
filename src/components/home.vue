@@ -7,12 +7,24 @@
         <div class="sjjhdjh">
           <div class="shangheader">
             <div class="leftheader">
-              <div class="leftheaderfirst">
+              <h1 class="leftheaderfirst">
                 <img src="../assets/image/logotou.png" alt />
-              </div>
+              </h1>
             </div>
             <div class="rightheader">
               <div class="rightheaderfirst">
+                <!-- 应用 -->
+                <div
+                  class="commst"
+                  style="height:60px;line-height:60px;"
+                  @mouseover="mouseOver"
+                  @mouseleave="mouseLeave"
+                >
+                  <span>
+                    应用
+                    <i class="el-icon-caret-bottom el-icon--right"></i>
+                  </span>
+                </div>
                 <div class="commst" v-for="(item, index) in shangshiall" :key="index">
                   <router-link
                     :to="{name:'ciseasonshi',params:{ciseasonid:`${index}.html`}}"
@@ -59,7 +71,7 @@
         </div>
         <div class="xiaheader">
           <h1>搜企业，上搜企</h1>
-          <div class="xaiobiao">全 国 搜</div>
+          <!-- <div class="xaiobiao">全 国 搜</div> -->
           <div class="xaioshuru">
             <el-input
               placeholder="请输入企业名称"
@@ -301,24 +313,37 @@
         </div>
       </div>
     </div>
+    <!-- 鼠标经过应用后出现 -->
+    <div
+      v-show="ishowkuai"
+      class="zhanshiyu"
+      @mouseover="mouseOver"
+      @mouseleave="mouseLeave"
+      @mousewheel.prevent
+    >
+      <div class="common-use">
+        <p>
+          <el-divider>
+            <i class="el-icon-s-platform" />
+            <span style="font-weight: bold;font-size:14px;">快捷服务</span>
+          </el-divider>
+        </p>
+        <ul>
+          <li @click="gointerest">
+            <p>
+              <i class="iconfont icon-lishuai"></i>
+            </p>
+            <p>理财计算器</p>
+          </li>
+        </ul>
+      </div>
+    </div>
     <!-- 移动端 -->
     <div class="mobmain" v-if="!showxiang">
       <div class="mobhome">
         <h2 class="mobtitle">搜企业，上搜企</h2>
-        <div class="mobxaiobiao">全 国 搜</div>
         <div class="mobxaioshuru">
-          <!-- <el-input
-            placeholder="请输入企业名称"
-            v-model.trim="input"
-            @keyup.enter.native="chaxung"
-            :disabled="isDisable"
-          ></el-input>-->
-          <input
-            type="text"
-            placeholder="请输入企业名称"
-            v-model.trim="input"
-            :disabled="isDisable"
-          />
+          <input type="text" placeholder="请输入企业名称" v-model.trim="input" :disabled="isDisable" />
           <el-button
             type="primary"
             icon="el-icon-search"
@@ -408,6 +433,19 @@ import foTer from '@/components/common/FoTer.vue'
 // import jcRange from '@/components/mokuai/JcRange.vue'
 import dragVerify from 'vue-drag-verify'
 export default {
+  metaInfo: {
+    title: '搜企业-上搜企',
+    meta: [
+      {
+        name: 'keywords',
+        content: '搜企'
+      },
+      {
+        name: 'description',
+        content: '搜企业-上搜企'
+      }
+    ]
+  },
   // props: {},
   data() {
     return {
@@ -525,7 +563,9 @@ export default {
       // 百科数组保存
       baikeall: [],
       // 保存热门搜素数据
-      nhotslist: []
+      nhotslist: [],
+      // 应用
+      ishowkuai: false
     }
   },
   mounted() {
@@ -546,6 +586,22 @@ export default {
   },
   // watch: {},
   methods: {
+    // 去 个人贷款页面
+    gointerest() {
+      let interestid = '.html'
+      const { href } = this.$router.resolve({
+        name: 'interest',
+        params: { interestid }
+      })
+      window.open(href, '_blank')
+    },
+    mouseLeave() {
+      this.ishowkuai = false
+    },
+    mouseOver() {
+      console.log('1111')
+      this.ishowkuai = true
+    },
     // 去
     mongodetail(value) {
       this.$router.push({
@@ -620,8 +676,9 @@ export default {
       // console.log('1111')
       // 防止多次点击
       this.isDisable = true
-      setTimeout(() => {
+      let timerr = setTimeout(() => {
         this.isDisable = false
+        window.clearTimeout(timerr)
       }, 1000)
       // 判断输入框是否为空 空就中止
       if (this.input === '' || this.input === '公司' || this.input === '有限公司') {
@@ -876,7 +933,7 @@ export default {
             justify-content: space-between;
             align-items: center;
             width: 600px;
-            height: 40px;
+            height: 60px;
             .rightheaderfirst {
               width: 80%;
               height: 100%;
@@ -887,11 +944,22 @@ export default {
                 margin-left: 5px;
                 width: 78px;
                 height: 40px;
+                // line-height: 60px;
                 font-size: 15px;
                 line-height: 40px;
+                // color: #fff;
+                span {
+                  display: block;
+                  height: 100%;
+                  height: 100%;
+                  color: #fff;
+                  cursor: pointer;
+                }
                 a {
                   color: #fff;
+                  cursor: pointer;
                 }
+                span:hover,
                 a:hover {
                   color: #ffa500;
                 }
@@ -922,7 +990,7 @@ export default {
 
       .xiaheader {
         width: 100%;
-        height: 850px;
+        height: 950px;
         background: url('../assets/image/timg2.png') no-repeat center;
         position: relative;
         h1 {
@@ -1300,6 +1368,50 @@ export default {
       }
     }
   }
+  // 鼠标滑过出现下拉框
+  .zhanshiyu {
+    // z-index: 1000;
+    position: fixed;
+    top: 58px;
+    right: 550px;
+    width: 400px;
+    height: 500px;
+    background-color: #fff;
+    border-radius: 10px;
+    .common-use {
+      width: 100%;
+      i {
+        color: #008bfe;
+      }
+      ul {
+        padding: 0 20px;
+        margin: 0;
+        width: 100%;
+        display: flex;
+        justify-content: flex-start;
+        li {
+          cursor: pointer;
+          padding: 0;
+          margin: 0;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: space-around;
+          p {
+            margin: 5px 0;
+            padding: 0;
+            font-size: 13px;
+            i {
+              font-size: 30px;
+            }
+          }
+        }
+        li:hover {
+          color: #008bfe;
+        }
+      }
+    }
+  }
 }
 // 移动端
 .mobmain {
@@ -1310,7 +1422,7 @@ export default {
     background-color: #1354e2;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-around;
     align-items: center;
     .mobtitle {
       width: 100%;
@@ -1319,10 +1431,10 @@ export default {
       text-align: center;
       // padding-top: 10px;
     }
-    .mobxaiobiao {
-      margin: 10px auto;
-      color: #ffa500;
-    }
+    // .mobxaiobiao {
+    //   margin: 10px auto;
+    //   color: #ffa500;
+    // }
     .mobxaioshuru {
       width: 90%;
       display: flex;
@@ -1338,7 +1450,7 @@ export default {
         height: 36px;
         line-height: 20px;
         border-radius: 4px;
-        padding-left:10px;
+        padding-left: 10px;
       }
     }
   }

@@ -29,6 +29,7 @@ const Articledet = () => import(/* webpackChunkName: "group-der" */ '@/component
 const Todaydet = () => import(/* webpackChunkName: "group-der" */ '@/components/hotnews/todaydet')
 const Ciseasonshi = () => import(/* webpackChunkName: "group-der" */ '@/components/ciseason/ciseasonshi')
 const Seadetail = () => import(/* webpackChunkName: "group-der" */ '@/components/ciseason/seadetail')
+const Interest = () => import(/* webpackChunkName: "group-inter" */'@/components/commonuse/interest')
 Vue.use(VueRouter)
 // 简单配置
 NProgress.inc(0.2)
@@ -111,13 +112,21 @@ const routes = [
   {
     path: '/ciseasonshi/:ciseasonid',
     name: 'ciseasonshi',
-    meta: { keepAlive: true },
+    // meta: { keepAlive: true },
     component: Ciseasonshi
   },
   {
     path: '/seadetail/:seadetail',
     name: 'seadetail',
     component: Seadetail
+  },
+  {
+    path: '/interest:interestid',
+    name: 'interest',
+    component: Interest,
+    meta: {
+      title: '理财计算器'
+    }
   },
   { path: '/souqiadmin', name: 'sqlogadmin', component: Login },
   {
@@ -130,15 +139,19 @@ const router = new VueRouter({
   routes
 })
 /* 路由异常错误处理，尝试解析一个异步组件时发生错误，重新渲染目标页面 */
-router.onError((error) => {
-  const pattern = /Loading chunk (\d)+ failed/g
-  const isChunkLoadFailed = error.message.match(pattern)
-  const targetPath = router.history.pending.fullPath
-  if (isChunkLoadFailed) {
-    router.replace(targetPath)
-  }
-})
+// router.onError((error) => {
+//   const pattern = /Loading chunk (\d)+ failed/g
+//   const isChunkLoadFailed = error.message.match(pattern)
+//   const targetPath = router.history.pending.fullPath
+//   if (isChunkLoadFailed) {
+//     router.replace(targetPath)
+//   }
+// })
 router.beforeEach((to, from, next) => {
+  /* 路由发生变化修改页面title */
+  if (to.meta.title) {
+    document.title = to.meta.title
+  }
   if (to.path !== from.path) {
     NProgress.start()
   }

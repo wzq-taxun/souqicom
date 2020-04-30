@@ -6,11 +6,11 @@
         <div class="blocksdjks">
           <div class="shangheader">
             <div class="leftheader">
-              <div class="leftheaderfirst">
+              <h1 class="leftheaderfirst">
                 <router-link style="display:block; width: 100%;height:100%" to="/">
                   <img src="../../assets/image/logotou.png" alt />
                 </router-link>
-              </div>
+              </h1>
             </div>
             <!-- 中部输入框 -->
             <div class="zhongbushu">
@@ -233,6 +233,7 @@ export default {
   props: {},
   data() {
     return {
+      timer: null,
       // 控制pc端还是移动端----------------------------------------------------
       showxiang: true,
       // 公司名字
@@ -249,7 +250,7 @@ export default {
       gonglist: [],
       // 首页搜索所传过来的值
       shouinput: '',
-      total: 1000,
+      total: 0,
       pagesize: 10,
       pagess: 1,
       oldtoken: '',
@@ -262,11 +263,12 @@ export default {
   created() {
     // 页面刷新后获取之前的页码数
     // 把页码值取出来赋值给当前的页数
-    this.pagess = parseInt(window.sessionStorage.getItem('pag'))
+    // this.pagess = parseInt(window.sessionStorage.getItem('pag'))
     // 获取首页搜索所传过来的值
     this.shouinput = this.$route.params.search1.split('.')[0]
   },
   mounted() {
+    window.addEventListener('scroll', this.scrollToTop)
     this.yantoken1()
     // 发起搜索的请求
     this.fashousuo()
@@ -278,6 +280,23 @@ export default {
   },
   watch: {},
   methods: {
+    // 点击图片回到顶部方法，加计时器是为了过渡顺滑
+    backTop() {
+      const that = this
+      that.timer = setInterval(() => {
+        let ispeed = Math.floor(-that.scrollTop / 5)
+        document.documentElement.scrollTop = document.body.scrollTop = that.scrollTop + ispeed
+        if (that.scrollTop === 0) {
+          window.clearInterval(that.timer)
+        }
+      }, 10)
+    },
+    // 为了计算距离顶部的高度
+    scrollToTop() {
+      const that = this
+      let scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
+      that.scrollTop = scrollTop
+    },
     getmabnameen(val) {
       // console.log(val.replace(/小米/g, `<span style="color:red">${this.shouinput}</span>`))
       return val.replace(this.shouinput, `<span style="color:red">${this.shouinput}</span>`)
@@ -324,7 +343,16 @@ export default {
           showClose: false
         })
       }
-      // (++++++++)
+      // 替换当前的url地址的参数//读取query参数
+      let newQuery = JSON.parse(JSON.stringify(this.$route.params))
+      newQuery.search1 = `${this.inputc}.html`
+      let routeParam = {
+        params: newQuery
+      }
+      this.$router.push(routeParam)
+      this.backTop()
+      // 显示当前第一页数据
+      this.pagess = 1
       this.openloding()
       // 发搜索请求
       const { data: res } = await this.$http.get('enterprise/search/', {
@@ -336,13 +364,15 @@ export default {
         this.shifhdi = false
         return this.$message.error('未发现该公司')
       }
-      // 加载效果终止
-      this.loading = false
       this.shifhdi = true
       // 将在本页面搜素的值 赋值给shouinput进项渲染
       this.shouinput = this.inputc
       // 赋值给数组进行遍历
-      this.gonglist = res.results
+      this.gonglist = res.results.data
+      let strr = res.results.contacts.split(' ')[res.results.contacts.split(' ').length - 1]
+      this.total = parseInt(strr.substring(0, strr.length - 1)) * 10
+      // 加载效果终止
+      this.loading = false
     },
     async yantoken1() {
       this.oldtoken = window.localStorage.getItem('token')
@@ -377,12 +407,10 @@ export default {
     },
     // 页码改变后
     async handleCurrentChange(val) {
-      // if (val > 5) {
-      //   // 验证
-      //   this.yantoken()
-      // }
+      this.backTop()
       this.pagess = val
-      window.sessionStorage.setItem('pag', this.pagess)
+      // window.sessionStorage.setItem('pag', this.pagess)
+      this.openloding()
       const { data: res } = await this.$http.get('enterprise/search/', {
         params: { key: this.shouinput, page: val }
       })
@@ -392,14 +420,20 @@ export default {
         return this.$message.error('获取数据失败')
       }
       // 把结果赋值给 gonglistall
-      this.gonglist = res.results
+      this.gonglist = res.results.data
+      let strr = res.results.contacts.split(' ')[res.results.contacts.split(' ').length - 1]
+      this.total = parseInt(strr.substring(0, strr.length - 1)) * 10
+      // 加载效果终止
+      this.loading = false
     },
     // 发起搜索的请求
     async fashousuo() {
+      this.backTop()
+      this.openloding()
       const { data: res } = await this.$http.get('enterprise/search/', {
         params: { key: this.shouinput }
       })
-      console.log(res)
+      // console.log(res)
       // 判断
       if (res.status !== 0) {
         this.shifhdi = false
@@ -407,15 +441,22 @@ export default {
       }
       this.shifhdi = true
       // 赋值给数组进行遍历
-      this.gonglist = res.results
-      // this.total = this.gonglist.length
+      this.gonglist = res.results.data
+      let strr = res.results.contacts.split(' ')[res.results.contacts.split(' ').length - 1]
+      this.total = parseInt(strr.substring(0, strr.length - 1)) * 10
+      // 加载效果终止
+      this.loading = false
     }
   },
   beforeDestroy() {
     // 页面销毁的时候清除会话存储的pag值 避免再次进后就再之前的页面
-    window.sessionStorage.removeItem('pag')
+    // window.sessionStorage.removeItem('pag')
     // console.log('销毁组件'）
     // this.finalCart()
+    window.clearInterval(this.timer)
+  },
+  destroyed() {
+    window.removeEventListener('scroll', this.scrollToTop)
   },
   components: {
     foTer

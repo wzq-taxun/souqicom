@@ -2,11 +2,11 @@
   <div class="blockshanghe">
     <div class="shangheader">
       <div class="leftheader">
-        <div class="leftheaderfirst">
+        <h1 class="leftheaderfirst">
           <span class="doindexpage" @click="gohomepage">
             <img src="../../assets/image/logotou.png" alt />
           </span>
-        </div>
+        </h1>
       </div>
       <!-- 中部输入框 -->
       <div class="zhongbushu">

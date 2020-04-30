@@ -140,7 +140,7 @@ export default {
     return {
       timer: '',
       // 总条数
-      total: 10000,
+      total: 0,
       // 当前页码数
       pagess: 1,
       // 所属行业列表
@@ -188,11 +188,13 @@ export default {
   },
   mounted() {
     // 把页码值取出来赋值给当前的页数
-    this.pagess = parseInt(window.sessionStorage.getItem('page'))
+    // this.pagess = parseInt(window.sessionStorage.getItem('page'))
+    // console.log(this.pagess)
     // // 页面刷新后就当前的url地址的参数//读取query参数
-    let idval = parseInt(this.$route.params.searchid.split('.')[0])
-    this.suo = idval
-    this.handleCurrentChange(this.pagess)
+    // let idval = parseInt(this.$route.params.searchid.split('.')[0])
+    // this.suo = idval
+    // this.handleCurrentChange(this.pagess)
+    this.firstlisyu()
     window.addEventListener('scroll', this.scrollToTop)
   },
   watch: {},
@@ -239,6 +241,8 @@ export default {
     },
     // 点击所属分类的每一项就触发请求
     async fenleishu(val) {
+      // // 清除会话存储的page值 避免再次进去所属分类后就再之前的页面
+      // window.sessionStorage.removeItem('page')
       // 修改值
       this.suo = val
       // 替换当前的url地址的参数
@@ -258,8 +262,9 @@ export default {
       // console.log(res)
       if (res.status !== 0) return this.$message.error('获取数据失败')
       // 把结果赋值给 gonglistall
-      this.gonglistall = res.results
-      // +++++
+      this.gonglistall = res.results.data
+      let strr = res.results.contacts.split(' ')[res.results.contacts.split(' ').length - 1]
+      this.total = parseInt(strr.substring(0, strr.length - 1)) * 10
       this.loading = false
     },
     // 每次改变当前页时触发请求
@@ -271,13 +276,9 @@ export default {
         clearTimeout(dibshi)
       }, 1000)
       this.backTop()
-      // if (val > 5) {
-      //   this.yantoken()
-      // }
       // 临时存储！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
-      this.pagess = val
-      window.sessionStorage.setItem('page', this.pagess)
-      // +++
+      // 判断val页码值是否为1 如果是就 调用第一次请求
+      // if (val.toString() === 'NaN') return this.firstlisyu()
       this.openloding()
       const { data: res } = await this.$http.get('enterprise/category/', {
         params: { key: parseInt(this.suo) + 1, page: val }
@@ -287,9 +288,30 @@ export default {
         return this.$message.error('获取数据失败')
       }
       // 把结果赋值给 gonglistall
-      this.gonglistall = res.results
-      // if (res.results.length < 10) return (this.ishow = false)
-      // +++
+      this.gonglistall = res.results.data
+      let strr = res.results.contacts.split(' ')[res.results.contacts.split(' ').length - 1]
+      this.total = parseInt(strr.substring(0, strr.length - 1)) * 10
+      this.pagess = val
+      // window.sessionStorage.setItem('page', this.pagess)
+      this.loading = false
+    },
+    // 第一次请求
+    async firstlisyu() {
+      // console.log('111')
+      // 显示当前第一页数据
+      // this.pagess = 1
+      // // 把页码值取出来赋值给当前的页数
+      // this.pagess = parseInt(window.sessionStorage.getItem('page'))
+      this.openloding()
+      const { data: res } = await this.$http.get('enterprise/category/', {
+        params: { key: parseInt(this.suo) + 1 }
+      })
+      // console.log(res)
+      if (res.status !== 0) return this.$message.error('获取数据失败')
+      // 把结果赋值给 gonglistall
+      this.gonglistall = res.results.data
+      let strr = res.results.contacts.split(' ')[res.results.contacts.split(' ').length - 1]
+      this.total = parseInt(strr.substring(0, strr.length - 1)) * 10
       this.loading = false
     }
   },

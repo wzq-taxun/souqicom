@@ -5,11 +5,11 @@
         <div class="bfhdhneibu">
           <div class="shangheader">
             <div class="leftheader">
-              <div class="leftheaderfirst" @click="gohome">
+              <h1 class="leftheaderfirst" @click="gohome">
                 <router-link style="display:block; width: 100%;height:100%" to="/">
                   <img src="../../assets/image/logotou.png" alt />
                 </router-link>
-              </div>
+              </h1>
               <!-- <div class="leftheaderlast"></div> -->
             </div>
             <div class="rightheader">

@@ -176,7 +176,7 @@ export default {
       },
       arelistall: [],
       pagess: 1,
-      total: 1000,
+      total: 0,
       isdisabled: false,
       // (+++++)
       loading: false
@@ -189,13 +189,14 @@ export default {
     this.chuazhi = this.$route.params.search2.split('.')[0]
   },
   mounted() {
-    // 把页码值取出来赋值给当前的页数
-    this.pagess = parseInt(window.sessionStorage.getItem('page'))
+    // // 把页码值取出来赋值给当前的页数
+    // this.pagess = parseInt(window.sessionStorage.getItem('page'))
     // // 页面刷新后就当前的url地址的参数//读取query参数
-    let idval = this.$route.params.search2.split('.')[0]
-    this.chuazhi = idval
+    // let idval = this.$route.params.search2.split('.')[0]
+    // this.chuazhi = idval
     // 页面加载就开始请求调用
-    this.handleCurrentChange(this.pagess)
+    // this.handleCurrentChange(this.pagess)
+    this.firstlisyu()
     window.addEventListener('scroll', this.scrollToTop)
   },
   watch: {},
@@ -253,7 +254,6 @@ export default {
       this.$router.push(routeParam)
       // 显示当前第一页数据
       this.pagess = 1
-      // (++++++++)
       this.openloding()
       const { data: res } = await this.$http.get('enterprise/location/', {
         params: { key: this.chuazhi }
@@ -261,7 +261,9 @@ export default {
       // console.log(res)
       if (res.status !== 0) return this.$message.error('获取数据失败')
       // 把结果赋值给 gonglistall
-      this.arelistall = res.results
+      this.arelistall = res.results.data
+      let strr = res.results.contacts.split(' ')[res.results.contacts.split(' ').length - 1]
+      this.total = parseInt(strr.substring(0, strr.length - 1)) * 10
       // (++++)
       this.loading = false
     },
@@ -273,15 +275,9 @@ export default {
         this.isDisable = false
       }, 1000)
       this.backTop()
-      // window.localStorage.getItem('token')
-      // if (val > 5) {
-      //   // 验证token值
-      //   this.yantoken()
-      // }
       // 临时存储！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
       this.pagess = val
-      window.sessionStorage.setItem('page', this.pagess)
-      // window.sessionStorage.setItem('page', 'this.pagess')
+      // window.sessionStorage.setItem('page', this.pagess)
       // (++++++++)
       this.openloding()
       const { data: res } = await this.$http.get('enterprise/location/', {
@@ -293,8 +289,30 @@ export default {
         return this.$message.error('获取数据失败')
       }
       // 把结果赋值给 gonglistall
-      this.arelistall = res.results
+      this.arelistall = res.results.data
+      let strr = res.results.contacts.split(' ')[res.results.contacts.split(' ').length - 1]
+      this.total = parseInt(strr.substring(0, strr.length - 1)) * 10
       // (++++)
+      this.loading = false
+    },
+    // 第一次请求
+    async firstlisyu() {
+      this.backTop()
+      // console.log('111')
+      // 显示当前第一页数据
+      // this.pagess = 1
+      // // 把页码值取出来赋值给当前的页数
+      // this.pagess = parseInt(window.sessionStorage.getItem('page'))
+      this.openloding()
+      const { data: res } = await this.$http.get('enterprise/location/', {
+        params: { key: this.chuazhi }
+      })
+      // console.log(res)
+      if (res.status !== 0) return this.$message.error('获取数据失败')
+      // 把结果赋值给 gonglistall
+      this.arelistall = res.results.data
+      let strr = res.results.contacts.split(' ')[res.results.contacts.split(' ').length - 1]
+      this.total = parseInt(strr.substring(0, strr.length - 1)) * 10
       this.loading = false
     },
     // 去登录注册
@@ -306,7 +324,7 @@ export default {
   },
   beforeDestroy() {
     // 页面销毁的时候清除会话存储的page值 避免再次进去所属分类后就再之前的页面
-    window.sessionStorage.removeItem('page')
+    // window.sessionStorage.removeItem('page')
     // console.log('销毁组件'）
     // this.finalCart()
     window.clearInterval(this.timer)
