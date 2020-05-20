@@ -14,6 +14,11 @@ const Baike = () => import(/* webpackChunkName: "group-nav" */ '@/components/inf
 const Newlist = () => import(/* webpackChunkName: "group-nav" */ '@/components/infos/newlist')
 const Addnew = () => import(/* webpackChunkName: "group-nav" */ '@/components/infos/addnew')
 const Addbaike = () => import(/* webpackChunkName: "group-nav" */ '@/components/infos/addbaike')
+const Toolist = () => import(/* webpackChunkName: "group-nav" */ '@/components/infos/toolist')
+const Information = () => import(/* webpackChunkName: "group-nav" */ '@/components/infos/information')
+const Subordinate = () => import(/* webpackChunkName: "group-nav" */ '@/components/infos/subordinate')
+const Addinfomation = () => import(/* webpackChunkName: "group-nav" */ '@/components/infos/addinfomation')
+
 // 前台
 const Register = () => import(/* webpackChunkName: "group-head" */ '@/components/login/register')
 const Userden = () => import(/* webpackChunkName: "group-head" */ '@/components/login/userden')
@@ -30,6 +35,10 @@ const Todaydet = () => import(/* webpackChunkName: "group-der" */ '@/components/
 const Ciseasonshi = () => import(/* webpackChunkName: "group-der" */ '@/components/ciseason/ciseasonshi')
 const Seadetail = () => import(/* webpackChunkName: "group-der" */ '@/components/ciseason/seadetail')
 const Interest = () => import(/* webpackChunkName: "group-inter" */'@/components/commonuse/interest')
+const DIffway = () => import(/* webpackChunkName: "group-inter" */'@/components/commonuse/diffway')
+const Hbjsq = () => import(/* webpackChunkName: "group-inter" */'@/components/commonuse/huobi')
+const Aboutinte = () => import(/* webpackChunkName: "group-inter" */ '@/components/commonuse/aboutinte')
+const Toolslistbook = () => import(/* webpackChunkName: "group-inter" */ '@/components/commonuse/toolslistbook')
 Vue.use(VueRouter)
 // 简单配置
 NProgress.inc(0.2)
@@ -42,13 +51,14 @@ NProgress.configure({
 const routes = [
   {
     path: '/',
-    redirect: '/home'
-  },
-  {
-    path: '/home',
-    name: 'home',
+    // redirect: '/home',
     component: Home
   },
+  // {
+  //   path: '/home',
+  //   name: 'home',
+  //   component: Home
+  // },
   {
     path: '/user_register',
     name: 'register',
@@ -121,16 +131,36 @@ const routes = [
     component: Seadetail
   },
   {
-    path: '/interest:interestid',
-    name: 'interest',
+    path: '/dkjsq:commonpathid',
+    name: 'dkjsq',
     component: Interest,
     meta: {
-      title: '理财计算器'
+      title: ''
     }
+  },
+  {
+    path: '/jsq:commonpathid',
+    name: 'jsq',
+    component: DIffway
+  },
+  {
+    path: '/huilv:commonpathid',
+    name: 'huilv',
+    component: Hbjsq
+  },
+  {
+    path: '/toolbook:aboutdkid',
+    name: 'toolbook',
+    component: Aboutinte
+  },
+  {
+    path: '/toolslist:valtolid',
+    name: 'toolslist',
+    component: Toolslistbook
   },
   { path: '/souqiadmin', name: 'sqlogadmin', component: Login },
   {
-    path: '/firstde', name: 'firstde', component: Firstde, redirect: '/welcome', children: [{ path: '/welcome', component: Welcome }, { path: '/usepeo', component: Usepeo }, { path: '/waritpeo', component: Waritpeo }, { path: '/baike', component: Baike }, { path: '/newlist', component: Newlist }, { path: '/newlist/addnew', component: Addnew }, { path: '/baike/addbaike', component: Addbaike }]
+    path: '/firstde', name: 'firstde', component: Firstde, redirect: '/welcome', children: [{ path: '/welcome', component: Welcome }, { path: '/usepeo', component: Usepeo }, { path: '/waritpeo', component: Waritpeo }, { path: '/baike', component: Baike }, { path: '/newlist', component: Newlist }, { path: '/toolist', component: Toolist }, { path: '/information', component: Information }, { path: '/toolist/subordinate', component: Subordinate }, { path: '/information/addinfomation', component: Addinfomation }, { path: '/newlist/addnew', component: Addnew }, { path: '/baike/addbaike', component: Addbaike }]
   }
 ]
 const router = new VueRouter({
@@ -159,7 +189,7 @@ router.beforeEach((to, from, next) => {
   // 获取token
   const tokenStr = window.sessionStorage.getItem('token1')
   if (!tokenStr) {
-    if (to.path !== '/firstde' && to.path !== '/welcome' && to.path !== '/usepeo' && to.path !== '/waritpeo' && to.path !== '/baike' && to.path !== '/newlist' && to.path !== '/newlist/addnew' && to.path !== '/baike/addbaike') return next()
+    if (to.path !== '/firstde' && to.path !== '/welcome' && to.path !== '/usepeo' && to.path !== '/waritpeo' && to.path !== '/baike' && to.path !== '/newlist' && to.path !== '/newlist/addnew' && to.path !== '/baike/addbaike' && to.path !== '/toolist' && to.path !== '/information' && to.path !== '/information/addinfomation' && to.path !== '/toolist/subordinate') return next()
     return next('/souqiadmin')
   }
   next()

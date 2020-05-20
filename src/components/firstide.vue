@@ -82,6 +82,29 @@
               <span>百科列表</span>
             </el-menu-item>
           </el-submenu>
+          <el-submenu index="3">
+            <!-- 一级菜单的模板区域 -->
+            <template slot="title">
+              <!-- 图标 -->
+              <i class="iconfont icon-danju"></i>
+              <!-- 文本 -->
+              <span>工具管理</span>
+            </template>
+
+            <!-- 二级菜单 -->
+            <el-menu-item index="/toolist" @click="saveNavState('/toolist')">
+              <!-- 图标 -->
+              <i class="el-icon-menu"></i>
+              <!-- 文本 -->
+              <span>工具列表</span>
+            </el-menu-item>
+            <el-menu-item index="/information" @click="saveNavState('/information')">
+              <!-- 图标 -->
+              <i class="el-icon-menu"></i>
+              <!-- 文本 -->
+              <span>资讯列表</span>
+            </el-menu-item>
+          </el-submenu>
         </el-menu>
       </el-aside>
       <!-- 右侧内容主体 -->

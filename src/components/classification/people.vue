@@ -24,6 +24,52 @@
             </div>
             <div class="rightheader">
               <div class="rightheaderfirst">
+                <!-- 应用 -->
+                <el-popover
+                  placement="bottom"
+                  width="400"
+                  trigger="hover"
+                  popper-class
+                  style="height:35px;line-height:35px;margin-right:6px;"
+                >
+                  <!-- 鼠标经过应用后出现 -->
+                  <div style="width:400px;height:300px;background-color: #fff;border-radius:20px;">
+                    <div class="common-use" style=" width: 100%;">
+                      <p>
+                        <el-divider>
+                          <i style="color: #008bfe;" class="el-icon-s-platform" />
+                          <span style="font-weight: bold;font-size:14px;">快捷服务</span>
+                        </el-divider>
+                      </p>
+                      <ul
+                        style="padding: 0; margin: 0;width: 100%;display: flex;justify-content: flex-start; flex-wrap: wrap;"
+                      >
+                        <li
+                          onmouseover="this.style.color='#008bfe'"
+                          onmouseout="this.style.color='#333'"
+                          style="cursor: pointer;padding: 0;width: 33.33%;margin-bottom: 15px;display: flex;flex-direction: column;align-items: center;justify-content: space-around;"
+                          @click="gointerest(item, index)"
+                          v-for="(item, index) in signlist"
+                          :key="index"
+                        >
+                          <p style=" margin: 5px 0;padding: 0;font-size:13px;">
+                            <i
+                              style="color: #008bfe;font-size:25px;"
+                              class="iconfont"
+                              :class="item.tool_taxon"
+                            ></i>
+                          </p>
+                          <p style="margin:0;">{{item.tools_name}}</p>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  <span slot="reference">
+                    应用
+                    <i class="el-icon-caret-bottom el-icon--right"></i>
+                    <!-- <i style="color: #008bfe;" class="el-icon-s-platform" /> -->
+                  </span>
+                </el-popover>
                 <div class="commst" v-for="(item, index) in shangshiall" :key="index">
                   <router-link
                     :to="{name:'ciseasonshi',params:{ciseasonid:`${index}.html`}}"
@@ -276,13 +322,17 @@ export default {
       // 控制图像提示
       isxi: false,
       // 保存新用户名
-      newuserName: ''
+      newuserName: '',
+      // 接受功能数据
+      signlist: [],
+      newoathlist: ['dkjsq', 'jsq', 'huilv']
     }
   },
   computed: {},
   created() {
     // 页面加载获取最新的图像
     this.imageUrl = this.imgpicpeo + window.localStorage.getItem('userimg')
+    this.getuserway()
   },
   mounted() {
     // 验证token值是否过期接口
@@ -290,6 +340,24 @@ export default {
   },
   watch: {},
   methods: {
+    // 调用 功能名称接口
+    async getuserway() {
+      const { data: res } = await this.$http.get('souqi/admin/tools/add/')
+      if (res.status !== 0) return this.$message.warning(res.msg)
+      for (let i = 0; i < res.results.length; i++) {
+        res.results[i].newname = this.newoathlist
+      }
+      this.signlist = res.results
+    },
+    // 去各自的功能页面
+    gointerest(val, index) {
+      let compath = `${val.id}.html`
+      const { href } = this.$router.resolve({
+        name: val.newname[index],
+        params: { commonpathid: compath }
+      })
+      window.open(href, '_blank')
+    },
     // 退出登录功能
     handleCommand(command) {
       if (command === 'e') {
@@ -656,6 +724,15 @@ export default {
             a:hover {
               color: #ffa500;
             }
+          }
+          .el-popover__reference {
+            display: block;
+            color: #fff;
+            width: 70px !important;
+          }
+          .el-popover__reference:hover {
+            color: #ffa500;
+            cursor: pointer;
           }
         }
         .rightheaderlast {

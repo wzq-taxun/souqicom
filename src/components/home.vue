@@ -14,17 +14,50 @@
             <div class="rightheader">
               <div class="rightheaderfirst">
                 <!-- 应用 -->
-                <div
-                  class="commst"
-                  style="height:60px;line-height:60px;"
-                  @mouseover="mouseOver"
-                  @mouseleave="mouseLeave"
+                <el-popover
+                  placement="bottom"
+                  width="400"
+                  trigger="hover"
+                  popper-class
+                  style="height:60px;line-height:60px;padding-right:30px;"
                 >
-                  <span>
+                  <!-- 鼠标经过应用后出现 -->
+                  <div style="width:400px;height:300px;background-color: #fff;border-radius: 20px;">
+                    <div class="common-use" style=" width: 100%;">
+                      <p>
+                        <el-divider>
+                          <i style="color: #008bfe;" class="el-icon-s-platform" />
+                          <span style="font-weight: bold;font-size:14px;">快捷服务</span>
+                        </el-divider>
+                      </p>
+                      <ul
+                        style="padding: 0; margin: 0;width: 100%;display: flex;justify-content: flex-start; flex-wrap: wrap;"
+                      >
+                        <li
+                          onmouseover="this.style.color='#008bfe'"
+                          onmouseout="this.style.color='#333'"
+                          style="cursor: pointer;padding: 0;width: 33.33%;margin-bottom: 15px;display: flex;flex-direction: column;align-items: center;justify-content: space-around;"
+                          @click="gointerest(item, index)"
+                          v-for="(item, index) in signlist"
+                          :key="index"
+                        >
+                          <p style=" margin: 5px 0;padding: 0;font-size:13px;">
+                            <i
+                              style="color: #008bfe;font-size:25px;"
+                              class="iconfont"
+                              :class="item.tool_taxon"
+                            ></i>
+                          </p>
+                          <p style="margin:0;">{{item.tools_name}}</p>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  <span slot="reference">
                     应用
                     <i class="el-icon-caret-bottom el-icon--right"></i>
                   </span>
-                </div>
+                </el-popover>
                 <div class="commst" v-for="(item, index) in shangshiall" :key="index">
                   <router-link
                     :to="{name:'ciseasonshi',params:{ciseasonid:`${index}.html`}}"
@@ -313,31 +346,6 @@
         </div>
       </div>
     </div>
-    <!-- 鼠标经过应用后出现 -->
-    <div
-      v-show="ishowkuai"
-      class="zhanshiyu"
-      @mouseover="mouseOver"
-      @mouseleave="mouseLeave"
-      @mousewheel.prevent
-    >
-      <div class="common-use">
-        <p>
-          <el-divider>
-            <i class="el-icon-s-platform" />
-            <span style="font-weight: bold;font-size:14px;">快捷服务</span>
-          </el-divider>
-        </p>
-        <ul>
-          <li @click="gointerest">
-            <p>
-              <i class="iconfont icon-lishuai"></i>
-            </p>
-            <p>理财计算器</p>
-          </li>
-        </ul>
-      </div>
-    </div>
     <!-- 移动端 -->
     <div class="mobmain" v-if="!showxiang">
       <div class="mobhome">
@@ -565,13 +573,18 @@ export default {
       // 保存热门搜素数据
       nhotslist: [],
       // 应用
-      ishowkuai: false
+      // ishowkuai: false,
+      // 接受功能数据
+      signlist: [],
+      newoathlist: ['dkjsq', 'jsq', 'huilv']
+      // iconlist: ['icon-daikuanlishuaitiaozhengbiao', 'icon-DVLINK_lishuaibaobei', 'icon-icon-test']
     }
+  },
+  created() {
+    this.getuserway()
   },
   mounted() {
     this.mobgetlist()
-    // console.log('测试')
-    console.log(process.env.BASE_URL)
     // 调用校验token接口
     this.yantoken()
     // 首页加载事件 新闻 及百科
@@ -586,22 +599,35 @@ export default {
   },
   // watch: {},
   methods: {
-    // 去 个人贷款页面
-    gointerest() {
-      let interestid = '.html'
+    // 调用 功能名称接口
+    async getuserway() {
+      const { data: res } = await this.$http.get('souqi/admin/tools/add/')
+      // console.log(res)
+      if (res.status !== 0) return this.$message.warning(res.msg)
+      for (let i = 0; i < res.results.length; i++) {
+        res.results[i].newname = this.newoathlist
+        // res.results[i].icon = this.iconlist
+      }
+      // console.log(res.results)
+      this.signlist = res.results
+      // console.log(this.signlist)
+    },
+    // 去各自的功能页面
+    gointerest(val, index) {
+      let compath = `${val.id}.html`
       const { href } = this.$router.resolve({
-        name: 'interest',
-        params: { interestid }
+        name: val.newname[index],
+        params: { commonpathid: compath }
       })
       window.open(href, '_blank')
     },
-    mouseLeave() {
-      this.ishowkuai = false
-    },
-    mouseOver() {
-      console.log('1111')
-      this.ishowkuai = true
-    },
+    // mouseLeave() {
+    //   this.ishowkuai = false
+    // },
+    // mouseOver() {
+    //   console.log('1111')
+    //   this.ishowkuai = true
+    // },
     // 去
     mongodetail(value) {
       this.$router.push({
@@ -944,10 +970,8 @@ export default {
                 margin-left: 5px;
                 width: 78px;
                 height: 40px;
-                // line-height: 60px;
                 font-size: 15px;
                 line-height: 40px;
-                // color: #fff;
                 span {
                   display: block;
                   height: 100%;
@@ -964,6 +988,60 @@ export default {
                   color: #ffa500;
                 }
               }
+              .el-popover__reference {
+                color: #fff;
+              }
+              .el-popover__reference:hover {
+                color: #ffa500;
+                cursor: pointer;
+                // /deep/.teshuqiangkuang:hover {
+                // }
+              }
+              // .commst-other {
+              //   width: 78px;
+              //   // 鼠标滑过出现下拉框
+              //   /deep/.zhanshiyu {
+              //     width: 400px;
+              //     height: 300px;
+              //     background-color: #fff;
+              //     border-radius: 10px;
+              //     .common-use {
+              //       width: 100%;
+              //       i {
+              //         color: #008bfe;
+              //       }
+              //       ul {
+              //         padding: 0;
+              //         margin: 0;
+              //         width: 100%;
+              //         display: flex;
+              //         justify-content: flex-start;
+              //         flex-wrap: wrap;
+              //         li {
+              //           cursor: pointer;
+              //           padding: 0;
+              //           width: 33.33%;
+              //           margin-bottom: 15px;
+              //           display: flex;
+              //           flex-direction: column;
+              //           align-items: center;
+              //           justify-content: space-around;
+              //           p {
+              //             margin: 5px 0;
+              //             padding: 0;
+              //             font-size: 13px;
+              //             i {
+              //               font-size: 30px;
+              //             }
+              //           }
+              //         }
+              //         li:hover {
+              //           color: #008bfe;
+              //         }
+              //       }
+              //     }
+              //   }
+              // }
             }
             .rightheaderlast {
               width: 15%;
@@ -1364,50 +1442,6 @@ export default {
               }
             }
           }
-        }
-      }
-    }
-  }
-  // 鼠标滑过出现下拉框
-  .zhanshiyu {
-    // z-index: 1000;
-    position: fixed;
-    top: 58px;
-    right: 550px;
-    width: 400px;
-    height: 500px;
-    background-color: #fff;
-    border-radius: 10px;
-    .common-use {
-      width: 100%;
-      i {
-        color: #008bfe;
-      }
-      ul {
-        padding: 0 20px;
-        margin: 0;
-        width: 100%;
-        display: flex;
-        justify-content: flex-start;
-        li {
-          cursor: pointer;
-          padding: 0;
-          margin: 0;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: space-around;
-          p {
-            margin: 5px 0;
-            padding: 0;
-            font-size: 13px;
-            i {
-              font-size: 30px;
-            }
-          }
-        }
-        li:hover {
-          color: #008bfe;
         }
       }
     }

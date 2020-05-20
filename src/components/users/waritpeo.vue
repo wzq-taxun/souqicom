@@ -27,7 +27,7 @@
 
       <!-- 用户列表区域 -->
       <el-table :data="userlist" border stripe>
-        <el-table-column prop="id" label="#" width="100"></el-table-column>
+        <el-table-column type="index" :index="indexMethod" label="排序" width="100"></el-table-column>
         <el-table-column label="昵称" prop="username"></el-table-column>
         <el-table-column label="电话" prop="mobile"></el-table-column>
         <el-table-column label="注册时间" prop="register_time"></el-table-column>
@@ -57,9 +57,11 @@ export default {
         // 当前的页数
         pagenum: 1,
         // 当前每页显示多少条数据
-        pagesize: 2
+        pagesize: 10
       },
-      // 用户列表
+      // 用户列表总数
+      userlistall: [],
+      // 用户列表前十条
       userlist: [],
       total: 0,
       loading: false
@@ -73,6 +75,9 @@ export default {
   mounted() {},
   watch: {},
   methods: {
+    indexMethod(index) {
+      return (this.queryInfo.pagenum - 1) * 10 + index + 1
+    },
     // 开启加载的函数(+++++)
     openloding() {
       // 控制lodaing的真假(+++++++)
@@ -93,13 +98,29 @@ export default {
       for (let i = 0; i < res.results.length; i++) {
         res.results[i].register_time = res.results[i].register_time.split('T')[0]
       }
+      // 数据总条数
+      this.total = parseInt(res.results.length)
+      this.userlistall = res.results
+      // 将页码赋值
+      if (window.sessionStorage.getItem('newpapeo')) {
+        this.queryInfo.pagenum = parseInt(window.sessionStorage.getItem('newpapeo'))
+        this.handleCurrentChange(this.queryInfo.pagenum)
+      } else {
+        // 数据前十条
+        this.userlist = res.results.slice(0, 10)
+      }
       this.loading = false
-      this.userlist = res.results
+      // this.userlist = res.results
     },
     // 分页事件
     handleSizeChange() {},
     // 改变当前页码
-    handleCurrentChange() {}
+    handleCurrentChange(newPage) {
+      this.queryInfo.pagenum = newPage
+      // 页码保存到sessionStorage中
+      window.sessionStorage.setItem('newpapeo', newPage)
+      this.userlist = this.userlistall.slice(newPage * 10 - 10, newPage * 10)
+    }
   },
   components: {}
 }

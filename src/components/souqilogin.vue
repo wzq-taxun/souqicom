@@ -15,17 +15,13 @@
       >
         <!-- 用户名 -->
         <el-form-item prop="username">
-          <el-input
-            v-model="loginForm.username"
-            prefix-icon="iconfont icon-user"
-            placeholder="请输入您的用户名"
-          ></el-input>
+          <el-input v-model="loginForm.username" prefix-icon="el-icon-user" placeholder="请输入您的用户名"></el-input>
         </el-form-item>
         <!-- 密码 -->
         <el-form-item prop="password">
           <el-input
             v-model="loginForm.password"
-            prefix-icon="iconfont icon-3702mima"
+            prefix-icon="el-icon-lock"
             type="password"
             placeholder="请输入您的密码"
           ></el-input>
@@ -62,22 +58,18 @@ export default {
       // 这是表单的验证规则对象
       loginFormRules: {
         // 验证用户名是否合法
-        username: [
-          { required: true, message: '请输入登录名称', trigger: 'blur' },
-          { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
-        ],
+        username: [{ required: true, message: '请输入登录名称', trigger: 'blur' }, { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }],
         // 验证密码是否合法
-        password: [
-          { required: true, message: '请输入登录密码', trigger: 'blur' },
-          { min: 6, max: 15, message: '长度在 6 到 15 个字符', trigger: 'blur' }
-        ]
+        password: [{ required: true, message: '请输入登录密码', trigger: 'blur' }, { min: 6, max: 15, message: '长度在 6 到 15 个字符', trigger: 'blur' }]
       }
     }
   },
   computed: {},
   created() {
-    // 页面创建前的赋值
-    this.codeImg = 'http://47.240.250.145:8000/souqi/admin/get_code/'
+    // // 页面创建前的赋值 线上版本
+    // this.codeImg = 'http://47.240.250.145:8000/souqi/admin/get_code/'
+    // 线下版本
+    this.codeImg = 'http://192.168.0.106:8000/souqi/admin/get_code/'
   },
   mounted() {},
   watch: {},
@@ -85,7 +77,10 @@ export default {
     // 点击图片 防止缓存
     changeCodeImg() {
       let num = Math.ceil(Math.random() * 10) // 生成一个随机数（防止缓存）
-      this.codeImg = `http://47.240.250.145:8000/souqi/admin/get_code/?${num}`
+      // // 线上版本
+      // this.codeImg = `http://47.240.250.145:8000/souqi/admin/get_code/?${num}`
+      // 线下版本
+      this.codeImg = `http://192.168.0.106:8000/souqi/admin/get_code/?${num}`
     },
     // 登录
     login() {

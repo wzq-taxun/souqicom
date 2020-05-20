@@ -30,5 +30,9 @@ Vue.config.productionTip = false
 Vue.use(VueQuillEditor)
 new Vue({
   router,
+  // // 添加mounted，不然不会执行预编译
+  // mounted() {
+  //   document.dispatchEvent(new Event('custom-render-trigger'))
+  // },
   render: h => h(App)
 }).$mount('#app')

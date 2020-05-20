@@ -25,6 +25,52 @@
             </div>
             <div class="rightheader">
               <div class="rightheaderfirst">
+                <!-- 应用 -->
+                <el-popover
+                  placement="bottom"
+                  width="400"
+                  trigger="hover"
+                  popper-class
+                  style="height:35px;line-height:35px;"
+                >
+                  <!-- 鼠标经过应用后出现 -->
+                  <div style="width:400px;height:300px;background-color: #fff;border-radius: 20px;">
+                    <div class="common-use" style=" width: 100%;">
+                      <p>
+                        <el-divider>
+                          <i style="color: #008bfe;" class="el-icon-s-platform" />
+                          <span style="font-weight: bold;font-size:14px;">快捷服务</span>
+                        </el-divider>
+                      </p>
+                      <ul
+                        style="padding: 0; margin: 0;width: 100%;display: flex;justify-content: flex-start; flex-wrap: wrap;"
+                      >
+                        <li
+                          onmouseover="this.style.color='#008bfe'"
+                          onmouseout="this.style.color='#333'"
+                          style="cursor: pointer;padding: 0;width: 33.33%;margin-bottom: 15px;display: flex;flex-direction: column;align-items: center;justify-content: space-around;"
+                          @click="gointerest(item, index)"
+                          v-for="(item, index) in signlist"
+                          :key="index"
+                        >
+                          <p style=" margin: 5px 0;padding: 0;font-size:13px;">
+                            <i
+                              style="color: #008bfe;font-size:25px;"
+                              class="iconfont"
+                              :class="item.tool_taxon"
+                            ></i>
+                          </p>
+                          <p style="margin:0;">{{item.tools_name}}</p>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  <span slot="reference">
+                    应用
+                    <i class="el-icon-caret-bottom el-icon--right"></i>
+                    <!-- <i style="color: #008bfe;" class="el-icon-s-platform" /> -->
+                  </span>
+                </el-popover>
                 <div class="commst" v-for="(item, index) in shangshiall" :key="index">
                   <router-link
                     :to="{name:'ciseasonshi',params:{ciseasonid:`${index}.html`}}"
@@ -256,11 +302,15 @@ export default {
       oldtoken: '',
       isshow: false,
       isDis: false,
-      loading: false
+      loading: false,
+      // 接受功能数据
+      signlist: [],
+      newoathlist: ['dkjsq', 'jsq', 'huilv']
     }
   },
   computed: {},
   created() {
+    this.getuserway()
     // 页面刷新后获取之前的页码数
     // 把页码值取出来赋值给当前的页数
     // this.pagess = parseInt(window.sessionStorage.getItem('pag'))
@@ -280,6 +330,25 @@ export default {
   },
   watch: {},
   methods: {
+    // 调用 功能名称接口
+    async getuserway() {
+      const { data: res } = await this.$http.get('souqi/admin/tools/add/')
+      if (res.status !== 0) return this.$message.warning(res.msg)
+      for (let i = 0; i < res.results.length; i++) {
+        res.results[i].newname = this.newoathlist
+        // res.results[i].icon = this.iconlist
+      }
+      this.signlist = res.results
+    },
+    // 去各自的功能页面
+    gointerest(val, index) {
+      let compath = `${val.id}.html`
+      const { href } = this.$router.resolve({
+        name: val.newname[index],
+        params: { commonpathid: compath }
+      })
+      window.open(href, '_blank')
+    },
     // 点击图片回到顶部方法，加计时器是为了过渡顺滑
     backTop() {
       const that = this
@@ -532,12 +601,29 @@ export default {
             height: 40px;
             font-size: 15px;
             line-height: 40px;
+            span {
+              display: block;
+              height: 100%;
+              height: 100%;
+              color: #fff;
+              cursor: pointer;
+            }
             a {
               color: #fff;
             }
+            span:hover,
             a:hover {
               color: #ffa500;
             }
+          }
+          .el-popover__reference {
+            display: block;
+            color: #fff;
+            width: 70px !important;
+          }
+          .el-popover__reference:hover {
+            color: #ffa500;
+            cursor: pointer;
           }
         }
         .rightheaderlast {
@@ -549,7 +635,7 @@ export default {
           color: #fff;
           border-radius: 5px;
           cursor: pointer;
-          margin-left: 10px;
+          margin-left: 80px;
           .el-dropdown-link {
             display: flex;
             justify-content: space-between;
@@ -644,6 +730,52 @@ export default {
     .sifyright {
       height: 1000px;
       width: 40%;
+    }
+  }
+}
+// 鼠标滑过出现下拉框
+.zhanshiyu {
+  // z-index: 1000;
+  position: fixed;
+  top: 58px;
+  right: 550px;
+  width: 400px;
+  height: 500px;
+  background-color: #fff;
+  border-radius: 10px;
+  .common-use {
+    width: 100%;
+    i {
+      color: #008bfe;
+    }
+    ul {
+      padding: 0 20px;
+      margin: 0;
+      width: 100%;
+      display: flex;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+      li {
+        cursor: pointer;
+        padding: 0;
+        width: 33.33%;
+        margin-bottom: 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-around;
+        p {
+          margin: 5px 0;
+          padding: 0;
+          font-size: 13px;
+          i {
+            font-size: 30px;
+          }
+        }
+      }
+      li:hover {
+        color: #008bfe;
+      }
     }
   }
 }

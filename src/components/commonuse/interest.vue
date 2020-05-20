@@ -17,7 +17,7 @@
                   <i class="el-icon-s-home"></i>
                   <router-link style="font-size:10px;color:#128BED" to="/">首页</router-link>
                   <i class="el-icon-right" style="font-size:10px;"></i>
-                  <span style="font-size:10px;">理财计算器</span>
+                  <span style="font-size:10px;">{{showvalzhi}}</span>
                 </span>
               </p>
             </div>
@@ -32,47 +32,58 @@
                 <div class="foritem">
                   <el-form ref="form" :model="sizeForm" label-width="120px" size="mini">
                     <el-form-item label="贷款金额:">
-                      <el-input v-model="sizeForm.sum">
+                      <el-input v-model="sizeForm.sum" type="number">
                         <template slot="append">元</template>
                       </el-input>
                     </el-form-item>
-                    <el-form-item label="贷款期限:">
+                    <el-form-item label="开始日期:">
+                      <el-date-picker
+                        v-model="value1"
+                        type="date"
+                        format="yyyy 年 MM 月 dd 日"
+                        value-format="yyyy-MM-dd"
+                        placeholder="选择日期"
+                        style="width: 100%;"
+                      ></el-date-picker>
+                    </el-form-item>
+                    <el-form-item label="结束日期:">
+                      <el-date-picker
+                        v-model="value2"
+                        type="date"
+                        format="yyyy 年 MM 月 dd 日"
+                        value-format="yyyy-MM-dd"
+                        placeholder="选择日期"
+                        style="width: 100%;"
+                      ></el-date-picker>
+                    </el-form-item>
+                    <el-form-item label="利率方式:">
                       <el-select
                         v-model="sizeForm.region"
-                        placeholder="请选择贷款年限"
+                        placeholder="请选择利率方式"
                         style="width:100%;"
                       >
-                        <el-option label="一年以内(含一年)" value="4.350"></el-option>
-                        <el-option label="一年至五年(含五年)" value="4.750"></el-option>
-                        <el-option label="五年以上" value="4.900"></el-option>
+                        <el-option label="年利率" value="1"></el-option>
+                        <el-option label="月利率" value="2"></el-option>
+                        <el-option label="日利率" value="3"></el-option>
                       </el-select>
                     </el-form-item>
-                    <el-form-item label="基准年利率:">
-                      <el-input v-model="sizeForm.region" disabled>
-                        <!-- <template slot="suffix">%</template> -->
-                        <template slot="append">
-                          %
-                          <el-popover placement="right" width="300" trigger="hover">
-                            <div class="content-lvli">
-                              <p style="font-weight: bold;text-align: center">人民币贷款央行基准利率表</p>
-                              <el-table :data="tableData" style="width: 100%">
-                                <el-table-column prop="date" label="时长"></el-table-column>
-                                <el-table-column prop="name" label="年利率%"></el-table-column>
-                              </el-table>
-                              <p
-                                style="text-align: center; font-size:9px; color:#333;"
-                              >注:以上资料仅做参考，如遇调整或变更，请按当地银行公布内容为准。</p>
-                            </div>
-                            <i
-                              style="color:#409EFF;cursor: pointer;font-style:normal"
-                              slot="reference"
-                            >贷款利率表</i>
-                          </el-popover>
-                        </template>
+                    <el-form-item label="自定义利率:">
+                      <el-input v-model="sizeForm.mysetqian" type="number">
+                        <template slot="append">%</template>
                       </el-input>
                     </el-form-item>
-                    <el-form-item label="贷款利率:">
-                      <el-input v-model="sizeForm.moneymoore" disabled>
+                    <el-form-item label="年利率:">
+                      <el-input v-model="sizeForm.yearqian" disabled>
+                        <template slot="append">%</template>
+                      </el-input>
+                    </el-form-item>
+                    <el-form-item label="月利率:">
+                      <el-input v-model="sizeForm.monthqian" disabled>
+                        <template slot="append">%</template>
+                      </el-input>
+                    </el-form-item>
+                    <el-form-item label="日利率:">
+                      <el-input v-model="sizeForm.dayqian" disabled>
                         <template slot="append">%</template>
                       </el-input>
                     </el-form-item>
@@ -90,7 +101,6 @@
                     </el-form-item>
                     <el-form-item label="累计还款总额:">
                       <el-input v-model="sizetab.itemb" disabled>
-                        <!-- <template slot="suffix">元</template> -->
                         <template slot="append">
                           元
                           <el-popover
@@ -184,23 +194,64 @@
             </div>
           </el-card>
         </div>
+        <over class="ovway" @func="getFormSon">
+          <div class="clearfix">
+            <p>相关资讯</p>
+            <p class="moreinte" @click="gomoretoolist()">查看更多</p>
+          </div>
+          <div class="ovsodiv" v-for="(item, index) in toolarticleall" :key="index">
+            <div
+              class="mabimg"
+              v-show="item.consulting_picture !== null"
+              @click="goaboutintepage(item.id)"
+            >
+              <img :src="`http://47.240.250.145:8000/${item.consulting_picture}`" alt />
+            </div>
+            <div class="mabtext">
+              <p class="tititoll" @click="goaboutintepage(item.id)">{{ getTitle(item.title)}}</p>
+              <p style="height:20px;color:#999999;">{{ item.issue_time}}</p>
+            </div>
+          </div>
+        </over>
       </el-main>
       <el-footer style="padding:0">
         <!-- 底部组件 -->
         <foTer></foTer>
       </el-footer>
     </el-container>
-    <!-- <iframe ref="iframe" src="https://www.baidu.com/"></iframe> -->
   </div>
 </template>
 
 <script>
 import headerl from '@/components/common/headerlan.vue'
 import foTer from '@/components/common/FoTer.vue'
+import over from '@/components/common/overwa.vue'
 export default {
+  metaInfo: {
+    title: '贷款计算器',
+    meta: [
+      {
+        name: 'keywords',
+        content: '计算器'
+      },
+      {
+        name: 'description',
+        content: '个人贷款计算器'
+      }
+    ]
+  },
   props: {},
   data() {
     return {
+      // 存放获取的文章
+      toolarticleall: [],
+      // 存储consulting_id:咨询id
+      consu_id: '',
+      iecahuncan: '',
+      msgFormSon: [],
+      showvalzhi: '',
+      value1: '',
+      value2: '',
       aredisabled: true,
       isDisable: false,
       sizetab: {
@@ -211,38 +262,88 @@ export default {
       },
       sizeForm: {
         sum: '',
-        moneymoore: '',
-        region: '',
+        region: '1',
         delivery: false,
         type: [],
         resource: '',
-        desc: ''
+        desc: '',
+        yearqian: '',
+        monthqian: '',
+        dayqian: '',
+        mysetqian: ''
       },
-      tableData: [
-        {
-          date: '一年以内（含一年）',
-          name: '4.350'
-        },
-        {
-          date: '一至五年（含五年）',
-          name: '4.750'
-        },
-        {
-          date: '五年以上',
-          name: '4.900'
-        }
-      ],
       tablelist: [],
       tablelistx: []
     }
   },
   computed: {},
-  created() {},
-  mounted() {},
+  created() {
+    // 页面接受传递过来的参数
+    this.jiecahuncan = this.$route.path
+    // 截取里面的id数字
+    this.consu_id = this.jiecahuncan
+      .split('.')[0]
+      .split('/')[1]
+      .replace(/[^0-9]/gi, '')
+  },
+  mounted() {
+    // 获取相应的功能文章
+    this.gettoolarticle()
+  },
   watch: {},
   methods: {
+    // 点击查看更多去列表页面
+    gomoretoolist() {
+      this.$router.push({
+        name: 'toolslist',
+        params: { valtolid: `${this.consu_id}.html` }
+      })
+    },
+    // 携带对应的文章id 去详情页面
+    goaboutintepage(intevalue) {
+      this.$router.push({
+        name: 'toolbook',
+        params: { aboutdkid: `${intevalue}.html` }
+      })
+    },
+    // 接受子组件传递过来的值
+    getFormSon(data) {
+      this.msgFormSon = data
+      this.getnamevalzhi()
+    },
+    getnamevalzhi() {
+      let jieca = this.jiecahuncan
+        .split('.')[0]
+        .split('/')[1]
+        .replace(/[0-9]/gi, '')
+      let allchan = this.msgFormSon[0].newname
+      let numzhi = allchan.indexOf(jieca)
+      for (let i = 0; i < this.msgFormSon.length; i++) {
+        if (i === numzhi) {
+          this.showvalzhi = this.msgFormSon[i].tools_name
+        }
+      }
+    },
+    // 判断标题的长短
+    getTitle(data) {
+      if (data.length > 10) return data.substring(0, 10)
+      return data
+    },
+    // 获取对应功能的文章列表
+    async gettoolarticle() {
+      const { data: res } = await this.$http.post('souqi/admin/tool/consulting/', { tools_name_id: this.consu_id })
+      console.log(res)
+      if (res.status !== 1) return this.$message.warning(res.msg)
+      // 将返回数据数组中每项对象中的时间替换一下
+      for (let i = 0; i < res.results.length; i++) {
+        res.results[i].issue_time = res.results[i].issue_time.split('T')[0]
+      }
+      this.toolarticleall = res.results.slice(0, 5)
+    },
     // 点击计算按钮发起请求
     async onSubmit() {
+      // console.log(this.value1)
+      // console.log(this.value2)
       // 防止多次点击
       this.isDisable = true
       let timerr = setTimeout(() => {
@@ -251,33 +352,49 @@ export default {
       }, 3000)
       let amtreg = /^\d+(\.\d{1,2})?$/
       if (!amtreg.test(this.sizeForm.sum.trim(''))) return this.$message.warning('请输入正确贷款金额')
-      if (this.sizeForm.region === '') return this.$message.warning('请输入正确贷款年限')
+      if (this.value1 === '') return this.$message.warning('请输入正确贷款期限')
+      if (this.sizeForm.mysetqian === '0') return this.$message.warning('请输入正确利率')
+      // this.sizeForm.moneymoore = this.sizeForm.region.trim('0')
+      // 起始时间和结束时间
+      let beginyear = this.value1.split('-')[0]
+      let beginmother = this.value1.split('-')[1]
+      let finshyear = this.value2.split('-')[0]
+      let finshmother = this.value2.split('-')[1]
+      console.log(beginyear, beginmother, finshyear, finshmother)
       // 每次请求前清空之前的数据
       this.tablelist = []
       this.tablelistx = []
-      this.sizeForm.moneymoore = this.sizeForm.region.trim('0')
-      let agem = '1'
-      if (this.sizeForm.region === '4.750') {
-        agem = '2'
-      } else if (this.sizeForm.region === '4.900') {
-        agem = '3'
-      }
-      // console.log(agem)
-      // console.log(this.sizeForm.sum)
-      const { data: res } = await this.$http.post('souqi_tool/loan/calculator/', { loans_money: this.sizeForm.sum, loans_time: agem })
-      // console.log(res.results.de_b_j_data.shift())
-      if (res.status !== 0) return this.$message.error(res.msg)
-      this.sizetab.itema = res.results.de_b_j_data[0][2]
-      this.sizetab.itemb = res.results.de_b_j_data[0][1]
-      this.sizetab.itemc = res.results.de_b_x_data[0][2]
-      this.sizetab.itemd = res.results.de_b_x_data[0][1]
+      const res = await this.$http.post('souqi_tool/loan/calculator/', {
+        loans_money: this.sizeForm.sum,
+        interest_rate_pk: this.sizeForm.region,
+        interest_rate: this.sizeForm.mysetqian,
+        start_year: beginyear,
+        start_month: beginmother,
+        end_year: finshyear,
+        end_month: finshmother
+      })
+      // console.log(res.data.results)
+      // console.log(res.data)
+      if (res.data.status !== 0) return this.$message.error(res.data.msg)
+      this.sizetab.itema = res.data.results.de_b_j_data[1][2]
+      this.sizetab.itemb = res.data.results.de_b_j_data[1][1]
+      this.sizetab.itemc = res.data.results.de_b_x_data[1][2]
+      this.sizetab.itemd = res.data.results.de_b_x_data[1][1]
+      let score1 = res.data.results.de_b_j_data[0][0].split('')
+      let score2 = res.data.results.de_b_j_data[0][1].split('')
+      let score3 = res.data.results.de_b_j_data[0][2].split('')
+      score1.pop()
+      score2.pop()
+      score3.pop()
+      this.sizeForm.yearqian = score1.join('')
+      this.sizeForm.monthqian = score2.join('')
+      this.sizeForm.dayqian = score3.join('')
+      // console.log(this.sizeForm.yearqian)
       // 将数组处理成对象
-      let bjlist = res.results.de_b_j_data
-      let bxlist = res.results.de_b_x_data
-      bjlist.shift()
-      bxlist.shift()
-      // console.log(bjlist)
-      // console.log(bjlist.length)
+      let bjlist = res.data.results.de_b_j_data
+      let bxlist = res.data.results.de_b_x_data
+      bjlist.splice(0, 2)
+      bxlist.splice(0, 2)
       for (let i = 0; i < bjlist.length; i++) {
         this.tablelist.push({ ...bjlist[i] })
       }
@@ -286,13 +403,14 @@ export default {
         this.tablelistx.push({ ...bxlist[i] })
       }
       this.tablelistx.push({ ...['总计', this.sizetab.itemd, this.sizeForm.sum, this.sizetab.itemc] })
-      // console.log(this.tablelist)
       this.pandanplay()
     },
     // 点击重置按钮
     onreset() {
+      this.sizeForm.region = '1'
       this.aredisabled = true
-      this.sizetab.itema = this.sizetab.itemb = this.sizetab.itemc = this.sizetab.itemd = this.sizeForm.sum = this.sizeForm.moneymoore = ''
+      this.value2 = this.sizeForm.mysetqian = this.sizetab.itema = this.sizetab.itemb = this.sizetab.itemc = this.sizetab.itemd = this.sizeForm.sum = this.value1 = this.sizeForm.yearqian = this.sizeForm.monthqian = this.sizeForm.dayqian =
+        ''
     },
     // 判断还款计划表是否有效
     pandanplay() {
@@ -301,7 +419,8 @@ export default {
   },
   components: {
     headerl,
-    foTer
+    foTer,
+    over
   }
 }
 </script>
@@ -331,20 +450,16 @@ export default {
   height: 28px !important;
   line-height: 28px !important;
 }
-.el-header {
-  // border-bottom: 1px solid #ccc;
-  width: 100%;
-  padding: 0 0;
-}
 .el-main {
   width: 100%;
   padding: 0 0;
   background-color: #e7e7e7;
+  display: flex;
+  justify-content: center;
   .el-main-inter {
-    margin: 50px auto;
-    width: 55%;
-    height: 1100px;
-    // background-color: pink;
+    margin: 50px 0;
+    margin-bottom: 100px;
+    width: 50%;
     .box-card {
       height: 100%;
       .box-tu {
@@ -353,7 +468,6 @@ export default {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        // margin: 10 auto !important;
         width: 95% !important;
         p {
           padding: 0;
@@ -412,7 +526,7 @@ export default {
                 font-weight: bold;
               }
               .el-form-item {
-                margin-bottom: 40px;
+                margin-bottom: 24px;
               }
             }
           }
@@ -423,6 +537,75 @@ export default {
             color: #333;
           }
         }
+      }
+    }
+  }
+  .ovway {
+    width: 20%;
+    .clearfix {
+      margin-top: 80px;
+      display: flex;
+      justify-content: space-between;
+      padding-right: 20px;
+      padding-bottom: 15px;
+      .moreinte {
+        color: #ccc;
+        cursor: pointer;
+      }
+      .moreinte:hover {
+        color: #008bfe;
+      }
+    }
+    .ovsodiv {
+      width: 100%;
+      padding-left: 20px;
+      height: 70px;
+      display: flex;
+      margin-top: 20px;
+      justify-content: flex-start;
+      .mabimg {
+        width: 20%;
+        height: 64px;
+        overflow: hidden;
+        img {
+          width: 100%;
+          height: 100%;
+          transition: all 0.8s;
+        }
+        img:hover {
+          transform: scale(1.2);
+        }
+      }
+      .mabtext {
+        width: 60%;
+        height: 64px;
+        margin-left: 10px;
+        font-size: 13px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding-top: 5px;
+        p {
+          color: #6f6f6f;
+          width: 100%;
+          // margin-top: 15px;
+          white-space: normal;
+          word-break: break-all;
+          word-wrap: break-word;
+        }
+        .tititoll {
+          font-size: 14px;
+          font-weight: 700px;
+          color: #111111;
+          margin-top: 0px;
+        }
+        .tititoll:hover {
+          color: #008bfe;
+          cursor: pointer;
+        }
+      }
+      .mabimg:hover {
+        cursor: pointer;
       }
     }
   }
