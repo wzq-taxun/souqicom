@@ -20,7 +20,6 @@ import 'quill/dist/quill.bubble.css'
 import * as Quill from 'quill'
 import imageResize from 'quill-image-resize-module'
 Quill.register('modules/imageResize', imageResize)
-
 // 配置请求的跟路径
 axios.defaults.baseURL = 'http://192.168.0.106:8000/'
 // axios.defaults.baseURL = 'http://47.240.250.145:8000/'
@@ -35,6 +34,10 @@ new Vue({
   // 添加mounted，不然不会执行预编译
   // mounted() {
   //   document.dispatchEvent(new Event('custom-render-trigger'))
+  // },
+  // 添加mounted，不然不会执行预编译
+  // mounted() {
+  //   document.dispatchEvent(new Event('render-event'))
   // },
   render: h => h(App)
 }).$mount('#app')

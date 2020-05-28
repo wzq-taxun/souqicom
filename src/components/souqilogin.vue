@@ -67,9 +67,9 @@ export default {
   computed: {},
   created() {
     // // 页面创建前的赋值 线上版本
-    // this.codeImg = 'http://47.240.250.145:8000/souqi/admin/get_code/'
+    this.codeImg = 'http://47.240.250.145:8000/souqi/admin/get_code/'
     // 线下版本
-    this.codeImg = 'http://192.168.0.106:8000/souqi/admin/get_code/'
+    // this.codeImg = 'http://192.168.0.106:8000/souqi/admin/get_code/'
   },
   mounted() {},
   watch: {},
@@ -78,16 +78,16 @@ export default {
     changeCodeImg() {
       let num = Math.ceil(Math.random() * 10) // 生成一个随机数（防止缓存）
       // // 线上版本
-      // this.codeImg = `http://47.240.250.145:8000/souqi/admin/get_code/?${num}`
+      this.codeImg = `http://47.240.250.145:8000/souqi/admin/get_code/?${num}`
       // 线下版本
-      this.codeImg = `http://192.168.0.106:8000/souqi/admin/get_code/?${num}`
+      // this.codeImg = `http://192.168.0.106:8000/souqi/admin/get_code/?${num}`
     },
     // 登录
     login() {
       this.$refs.loginFormRef.validate(async valid => {
         if (!valid) return false
-        const { data: res } = await this.$http.post('souqi/admin/login/', this.loginForm)
-        // console.log(res)
+        const { data: res } = await this.$http.post('souqi/admin/login/', { username: this.loginForm.username, password: this.loginForm.password, code: this.loginForm.code })
+        console.log(res)
         if (res.status !== 0) return this.$message.error(res.msg)
         this.$message.success('登录成功')
         // 发请求返回后台管理系统token1值临时存储

@@ -131,7 +131,7 @@ import foTer from '@/components/common/FoTer.vue'
 import over from '@/components/common/overwa.vue'
 export default {
   metaInfo: {
-    title: '常规计算器',
+    title: '在线计算器',
     meta: [
       {
         name: 'keywords',
@@ -139,7 +139,7 @@ export default {
       },
       {
         name: 'description',
-        content: '普通计算器'
+        content: '计算器'
       }
     ]
   },

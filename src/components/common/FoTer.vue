@@ -6,11 +6,16 @@
       <div class="footer-dinei">
         <div class="zhuadghuadg">
           <p>
-            数据来源：
+            数据来源:
             全国企业信用信息公示系统中国裁判文书网中国执行信息公开网国家知识产权局商标局版权局
           </p>
-          <p></p>
           <p>本系统供网友查询公司信息等，请以工商局数据为准，勿用作他途，如涉及侵权，请联系删除。</p>
+          <p>
+            友情链接:
+            <span v-for="(item) in frenidslist" :key="item.id" style="margin: 0 20px;">
+              <a :href="item.links_address" style="color:#7281AD">{{item.links_name}}</a>
+            </span>
+          </p>
         </div>
       </div>
     </div>
@@ -21,13 +26,26 @@
 export default {
   props: {},
   data() {
-    return {}
+    return {
+      // 有脸数据
+      frenidslist: []
+    }
   },
   computed: {},
   created() {},
-  mounted() {},
+  mounted() {
+    // 获取友情链接
+    this.getfrideurls()
+  },
   watch: {},
-  methods: {},
+  methods: {
+    async getfrideurls() {
+      const { data: res } = await this.$http.get('souqi/admin/friend_links/check/')
+      console.log(res)
+      if (res.status !== 1) return this.$message.warning(res.msg)
+      this.frenidslist = res.results
+    }
+  },
   components: {}
 }
 </script>

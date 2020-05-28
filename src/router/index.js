@@ -3,7 +3,9 @@ import VueRouter from 'vue-router'
 // 导入 NProgress 包对应的JS和CSS
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
-const Home = () => import(/* webpackChunkName: "group-foo" */ '@/components/home')
+import Home from '../components/home.vue'
+import Register from '../components/login/register.vue'
+// const Home = () => import(/* webpackChunkName: "group-foo" */ '@/components/home')
 // 后台管理系统路由
 const Login = () => import(/* webpackChunkName: "group-foo" */ '@/components/souqilogin')
 const Firstde = () => import(/* webpackChunkName: "group-foo" */ '@/components/firstide')
@@ -18,9 +20,11 @@ const Toolist = () => import(/* webpackChunkName: "group-nav" */ '@/components/i
 const Information = () => import(/* webpackChunkName: "group-nav" */ '@/components/infos/information')
 const Subordinate = () => import(/* webpackChunkName: "group-nav" */ '@/components/infos/subordinate')
 const Addinfomation = () => import(/* webpackChunkName: "group-nav" */ '@/components/infos/addinfomation')
+const Strands = () => import(/* webpackChunkName: "group-nav" */ '@/components/infos/strands')
 
 // 前台
-const Register = () => import(/* webpackChunkName: "group-head" */ '@/components/login/register')
+
+// const Register = () => import(/* webpackChunkName: "group-head" */ '@/components/login/register')
 const Userden = () => import(/* webpackChunkName: "group-head" */ '@/components/login/userden')
 const Forgetmi = () => import(/* webpackChunkName: "group-head" */ '@/components/login/forgetmi')
 const Classify = () => import(/* webpackChunkName: "group-head" */ '@/components/classification/search')
@@ -39,6 +43,7 @@ const DIffway = () => import(/* webpackChunkName: "group-inter" */'@/components/
 const Hbjsq = () => import(/* webpackChunkName: "group-inter" */'@/components/commonuse/huobi')
 const Aboutinte = () => import(/* webpackChunkName: "group-inter" */ '@/components/commonuse/aboutinte')
 const Toolslistbook = () => import(/* webpackChunkName: "group-inter" */ '@/components/commonuse/toolslistbook')
+const Errorinfo = () => import(/* webpackChunkName: "group-inter" */ '@/components/errorinfo')
 Vue.use(VueRouter)
 // 简单配置
 NProgress.inc(0.2)
@@ -54,11 +59,6 @@ const routes = [
     // redirect: '/home',
     component: Home
   },
-  // {
-  //   path: '/home',
-  //   name: 'home',
-  //   component: Home
-  // },
   {
     path: '/user_register',
     name: 'register',
@@ -158,9 +158,15 @@ const routes = [
     name: 'toolslist',
     component: Toolslistbook
   },
+  // 404page
+  {
+    path: '/errorinfo',
+    name: 'Errorinfo',
+    component: Errorinfo
+  },
   { path: '/souqiadmin', name: 'sqlogadmin', component: Login },
   {
-    path: '/firstde', name: 'firstde', component: Firstde, redirect: '/welcome', children: [{ path: '/welcome', component: Welcome }, { path: '/usepeo', component: Usepeo }, { path: '/waritpeo', component: Waritpeo }, { path: '/baike', component: Baike }, { path: '/newlist', component: Newlist }, { path: '/toolist', component: Toolist }, { path: '/information', component: Information }, { path: '/toolist/subordinate', component: Subordinate }, { path: '/information/addinfomation', component: Addinfomation }, { path: '/newlist/addnew', component: Addnew }, { path: '/baike/addbaike', component: Addbaike }]
+    path: '/firstde', name: 'firstde', component: Firstde, redirect: '/welcome', children: [{ path: '/welcome', component: Welcome }, { path: '/usepeo', component: Usepeo }, { path: '/waritpeo', component: Waritpeo }, { path: '/baike', component: Baike }, { path: '/newlist', component: Newlist }, { path: '/toolist', component: Toolist }, { path: '/information', component: Information }, { path: '/strands', component: Strands }, { path: '/toolist/subordinate', component: Subordinate }, { path: '/information/addinfomation', component: Addinfomation }, { path: '/newlist/addnew', component: Addnew }, { path: '/baike/addbaike', component: Addbaike }]
   }
 ]
 const router = new VueRouter({
@@ -178,14 +184,23 @@ const router = new VueRouter({
 //   }
 // })
 router.beforeEach((to, from, next) => {
-  /* 路由发生变化修改页面title */
-  if (to.meta.title) {
-    document.title = to.meta.title
-  }
   if (to.path !== from.path) {
     NProgress.start()
   }
-  if (to.path === '/souqiadmin') return next()
+  if (to.meta.title) {
+    /* 路由发生变化修改页面title */
+    document.title = to.meta.title
+  }
+  if (to.path === '/souqiadmin') {
+    return next()
+  }
+  if (to.matched.length === 0) {
+    from.name ? next({
+      name: from.name
+    }) : next('/errorinfo')
+  } else {
+    next() // 如果匹配到正确跳转
+  }
   // 获取token
   const tokenStr = window.sessionStorage.getItem('token1')
   if (!tokenStr) {

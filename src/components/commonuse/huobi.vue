@@ -87,7 +87,7 @@
                     </el-form-item>
                     <el-form-item v-show="isfouchuxian" class="elteshuqing">
                       <p>
-                        {{sizeForm.sum1}}
+                        {{baosum1val}}
                         <span class="corheise">{{labvalMessage}}</span>
                         <span style="color:#AAAAAA">&nbsp;=</span>
                         {{sizeForm.sum2}}
@@ -103,6 +103,8 @@
                     </el-form-item>
                   </el-form>
                 </div>
+                <!-- 可视化图表 -->
+                <div id="myChart"></div>
                 <p class="wenp">温馨提示：外汇兑换计算器的数据、计算结果仅供参考。具体以办理业务或交易实际结果为准，据此投资风险自负。</p>
               </div>
             </div>
@@ -140,6 +142,15 @@
 import headerl from '@/components/common/headerlan.vue'
 import foTer from '@/components/common/FoTer.vue'
 import over from '@/components/common/overwa.vue'
+// 引入 ECharts 主模块
+let echarts = require('echarts/lib/echarts')
+// 引入折线图/柱状图等组件
+require('echarts/lib/chart/line')
+// 引入提示框和title组件，图例
+require('echarts/lib/component/tooltip')
+require('echarts/lib/component/title')
+require('echarts/lib/component/legend')
+require('echarts/lib/component/legendScroll') // 图例滚动
 export default {
   metaInfo: {
     title: '汇率换算',
@@ -157,11 +168,22 @@ export default {
   props: {},
   data() {
     return {
+      // 汇率最大小值
+      huimi: '',
+      huima: '',
+      // 汇率数组
+      huilvall: [],
+      // 名称
+      huiname: '',
+      // 可视化图的数据 // 时间数组
+      timemothall: [],
       // 存放获取的文章
       toolarticleall: [],
       // 存储consulting_id:咨询id
       consu_id: '',
       value: '',
+      // 保存输入金额值
+      baosum1val: '',
       sizeForm: {
         sum1: '',
         sum2: '',
@@ -953,6 +975,105 @@ export default {
   },
   watch: {},
   methods: {
+    // 折线图
+    drawLine() {
+      // 初始化echart对象
+      let myChart = echarts.init(document.getElementById('myChart'))
+      myChart.setOption({
+        title: {
+          // text: '汇率走势'
+        },
+        tooltip: {
+          trigger: 'axis',
+          show: false
+        },
+        legend: {
+          orient: 'vertical',
+          selectedMode: false,
+          textStyle: {
+            // 图例文字的样式
+            color: '#008BFE',
+            fontSize: 16
+          }
+        },
+        grid: {
+          show: true,
+          left: '10',
+          right: '40',
+          bottom: '10',
+          containLabel: true
+        },
+        toolbox: {},
+        dataZoom: [],
+        calculable: true,
+        xAxis: {
+          name: '时间',
+          nameLocation: 'end',
+          type: 'category',
+          // splitNumber: 10,
+          boundaryGap: false,
+          axisTick: { show: false }, // 轴线上的点竖线不显示
+          axisLine: { show: false }, // 轴线不显示
+          data: this.timemothall,
+          // 网格样式
+          splitLine: {
+            show: true,
+            lineStyle: {
+              color: ['#ccc'],
+              width: 1,
+              type: 'solid'
+            }
+          }
+        },
+        yAxis: {
+          name: '汇率',
+          type: 'value',
+          splitNumber: 8,
+          min: this.huimi,
+          max: this.huima,
+          axisTick: { show: false }, // 轴线上的点竖线不显示
+          axisLine: { show: false }, // 轴线不显示
+          axisLabel: {
+            formatter: '{value}'
+          },
+          // 网格样式
+          splitLine: {
+            show: true,
+            lineStyle: {
+              color: ['#ccc'],
+              width: 1,
+              type: 'solid'
+            }
+          }
+        },
+        series: [
+          {
+            name: this.huiname,
+            type: 'line',
+            stack: '总量',
+            symbol: 'none', // 取消折点圆圈
+            clickable: false,
+            itemStyle: {
+              normal: {
+                color: '#008BFE',
+                lineStyle: {
+                  // 系列级个性化折线样式
+                  width: 2,
+                  type: 'solid',
+                  color: '#008BFE'
+                }
+              }
+            },
+            areaStyle: {
+              normal: {
+                color: '#CAE3F6'
+              }
+            },
+            data: this.huilvall
+          }
+        ]
+      })
+    },
     // 下拉框值改变后事件触发
     gaiobianshijian() {
       // 关闭关系
@@ -1031,15 +1152,29 @@ export default {
       }
       const { data: res } = await this.$http.post('souqi_tool/currency/calculator/', { money: this.sizeForm.sum1, to_RMB_id: val1, RMB_to_id: val2 })
       if (res.status !== 0) return this.$message.warning(res.msg)
-      console.log(res)
+      // console.log(res)
       this.sizeForm.sum2 = res.results[1]
       this.sizeForm.sum3 = res.results[0]
+      // 时间数组
+      this.timemothall = res.results[2]
+      // 汇率数组
+      this.huilvall = res.results[3]
+      // 汇率最大小值
+      this.huimi = Math.min(...this.huilvall).toFixed(4)
+      this.huima = Math.max(...this.huilvall).toFixed(4)
+      // 将输入框的值赋值给保存值
+      this.baosum1val = this.sizeForm.sum1
       // 显示出关系
       this.isfouchuxian = true
+      // 名称
+      this.huiname = `${this.labvalMessage}兑换${this.labval2Message}`
+      // console.log(this.huiname)
+      // 获取可视化数据
+      this.drawLine()
     },
     // 点击重置按钮
     onreset() {
-      this.sizeForm.sum2 = this.sizeForm.sum1 = this.sizeForm.sum3 = ''
+      this.sizeForm.sum2 = this.sizeForm.sum1 = this.sizeForm.sum3 = this.baosum1val = ''
       this.labval = '人民币CNY'
       this.labval2 = '美元USD'
       // 关闭关系
@@ -1089,7 +1224,7 @@ export default {
     margin: 50px 0;
     width: 50%;
     .box-card {
-      height: 100%;
+      // height: 100%;
       .box-tu {
         padding: 0;
         margin-left: 30px;
@@ -1116,7 +1251,7 @@ export default {
       }
       .box-inter {
         width: 95% !important;
-        height: 1000px;
+        // height: 1000px;
         margin: 20px auto;
         border-radius: 20px 20px 0 0;
         border: 2px solid #ccc;
@@ -1145,7 +1280,7 @@ export default {
           .foritem {
             margin: 50px auto;
             padding: 0;
-            width: 50%;
+            width: 80%;
             .el-form {
               width: 100%;
               p {
@@ -1158,6 +1293,12 @@ export default {
               }
             }
           }
+          #myChart {
+            margin: 50px auto;
+            padding-left: 5%;
+            width: 80%;
+            height: 420px;
+          }
           .wenp {
             font-size: 5px;
             width: 100%;
@@ -1166,7 +1307,9 @@ export default {
           }
           .elteshuqing {
             color: #008bfe;
+            width: 100%;
             p {
+              width: 100%;
               padding-right: 0px !important;
               text-align: center;
               margin: 0;

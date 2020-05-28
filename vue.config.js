@@ -1,8 +1,8 @@
 
-// const path = require('path')
 const webpack = require('webpack')
 // const PrerenderSPAPlugin = require('prerender-spa-plugin')
 // const Renderer = PrerenderSPAPlugin.PuppeteerRenderer
+// const path = require('path')
 module.exports = {
   assetsDir: 'assets',
   indexPath: 'index.html',
@@ -12,6 +12,9 @@ module.exports = {
   // 输出文件目录
   outputDir: 'dist',
   // assetsDir: 'static',
+  // css: {
+  //   extract: true
+  // },
   chainWebpack: config => {
     config.plugin('provide').use(webpack.ProvidePlugin, [{
       'window.Quill': 'quill'
@@ -26,8 +29,9 @@ module.exports = {
         vue: 'Vue',
         'vue-router': 'VueRouter',
         axios: 'axios',
-        lodash: '_',
+        // lodash: '_',
         nprogress: 'NProgress',
+        echarts: 'echarts',
         'element-ui': 'ELEMENT'
       })
       config.plugin('html').tap(args => {
@@ -43,45 +47,35 @@ module.exports = {
         return args
       })
     })
-  },
-  configureWebpack: {
-    performance: {
-      hints: 'warning',
-      // 入口起点的最大体积 整数类型（以字节为单位）
-      maxEntrypointSize: 50000000,
-      // 生成文件的最大体积 整数类型（以字节为单位 300k）
-      maxAssetSize: 30000000,
-      // 只给出 js 文件的性能提示
-      assetFilter: function (assetFilename) {
-        return assetFilename.endsWith('.js')
-      }
-    }
-    // plugins: [
-    //   new PrerenderSPAPlugin({
-    //     // 指定构建好的文件目录
-    //     staticDir: path.join(__dirname, 'dist'),
-    //     // 指定需要预渲染的的页面的路由
-    //     routes: ['/', '/user_register', '/user_userden', '/user_forgetmi', '/people', '/articlewe', '/todaytitle'],
-    //     // 这个很重要，如果没有配置这段，也不会进行预编译
-    //     renderer: new Renderer({
-    //       inject: {
-    //         foo: 'bar'
-    //       },
-    //       headless: false
-    //       // renderAfterDocumentEvent: 'render-event', 。
-    //       // args: ['--no-sandbox', '--disable-setuid-sandbox']
-    //     }),
-    //     // html文件压缩
-    //     minify: {
-    //       minifyCSS: true, // css压缩
-    //       removeComments: true // 移除注释
-    //     }
-    //   })
-    // ],
-    // resolve: {
-    //   alias: {
-    //     'vue$': 'vue/dist/vue.esm.js'
-    //   }
-    // }
   }
+  // configureWebpack: () => {
+  //   if (process.env.NODE_ENV !== 'production') return
+  //   return {
+  //     plugins: [
+  //       new PrerenderSPAPlugin({
+  //         // 生成文件的路径，也可以与webpakc打包的一致。
+  //         // 下面这句话非常重要！！！
+  //         // 这个目录只能有一级，如果目录层次大于一级，在生成的时候不会有任何错误提示，在预渲染的时候只会卡着不动。
+  //         staticDir: path.join(__dirname, 'dist'),
+  //         // 对应自己的路由文件，比如a有参数，就需要写成 /a/param1。
+  //         routes: ['/', '/user_register', '/todaytitle', '/articlewe'],
+  //         // html文件压缩
+  //         minify: {
+  //           minifyCSS: true, // css压缩
+  //           removeComments: true // 移除注释
+  //         },
+  //         // 这个很重要，如果没有配置这段，也不会进行预编译
+  //         renderer: new Renderer({
+  //           renderAfterTime: 5000,
+  //           inject: {
+  //             foo: 'bar'
+  //           },
+  //           headless: false,
+  //           // 在 main.js 中 document.dispatchEvent(new Event('render-event'))，两者的事件名称要对应上。
+  //           renderAfterDocumentEvent: 'render-event'
+  //         })
+  //       })
+  //     ]
+  //   }
+  // }
 }
