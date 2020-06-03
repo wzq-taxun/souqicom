@@ -93,7 +93,7 @@
                     </el-form-item>
                   </el-form>
                   <el-form ref="form" :model="sizetab" label-width="120px" size="mini">
-                    <p>等额本息还贷法</p>
+                    <p>等额本金还贷法</p>
                     <el-form-item label="累计支付利息:">
                       <el-input v-model="sizetab.itema" disabled>
                         <template slot="append">元</template>
@@ -116,7 +116,7 @@
                                 style="display:flex;justify-content:space-between;margin:0;padding:0;"
                               >
                                 <li class="dnkshdk">还款方式</li>
-                                <li class="dnkshdk othershu">等额本息还贷</li>
+                                <li class="dnkshdk othershu">等额本金还贷</li>
                                 <li class="dnkshdk">还款总额</li>
                                 <li class="dnkshdk othershu">{{sizetab.itemb}}</li>
                                 <li class="dnkshdk">利息总额</li>
@@ -130,6 +130,7 @@
                                 <el-table-column prop="1" label="月供"></el-table-column>
                                 <el-table-column prop="2" label="月供本金"></el-table-column>
                                 <el-table-column prop="3" label="月供利息"></el-table-column>
+                                <el-table-column prop="4" label="剩余本金"></el-table-column>
                               </el-table>
                             </div>
                             <i
@@ -140,7 +141,7 @@
                         </template>
                       </el-input>
                     </el-form-item>
-                    <p>等额本金还贷法</p>
+                    <p>等额本息还贷法</p>
                     <el-form-item label="累计支付利息:">
                       <el-input v-model="sizetab.itemc" disabled>
                         <template slot="append">元</template>
@@ -163,7 +164,7 @@
                                 style="display:flex;justify-content:space-between;margin:0;padding:0;"
                               >
                                 <li class="dnkshdk">还款方式</li>
-                                <li class="dnkshdk othershu">等额本金还贷</li>
+                                <li class="dnkshdk othershu">等额本息还贷</li>
                                 <li class="dnkshdk">还款总额</li>
                                 <li class="dnkshdk othershu">{{sizetab.itemd}}</li>
                                 <li class="dnkshdk">利息总额</li>
@@ -177,6 +178,7 @@
                                 <el-table-column prop="1" label="月供"></el-table-column>
                                 <el-table-column prop="2" label="月供本金"></el-table-column>
                                 <el-table-column prop="3" label="月供利息"></el-table-column>
+                                <el-table-column prop="4" label="剩余本金"></el-table-column>
                               </el-table>
                             </div>
                             <i
@@ -342,8 +344,6 @@ export default {
     },
     // 点击计算按钮发起请求
     async onSubmit() {
-      // console.log(this.value1)
-      // console.log(this.value2)
       // 防止多次点击
       this.isDisable = true
       let timerr = setTimeout(() => {
@@ -360,7 +360,7 @@ export default {
       let beginmother = this.value1.split('-')[1]
       let finshyear = this.value2.split('-')[0]
       let finshmother = this.value2.split('-')[1]
-      console.log(beginyear, beginmother, finshyear, finshmother)
+      // console.log(beginyear, beginmother, finshyear, finshmother)
       // 每次请求前清空之前的数据
       this.tablelist = []
       this.tablelistx = []
@@ -398,11 +398,11 @@ export default {
       for (let i = 0; i < bjlist.length; i++) {
         this.tablelist.push({ ...bjlist[i] })
       }
-      this.tablelist.push({ ...['总计', this.sizetab.itemb, this.sizeForm.sum, this.sizetab.itema] })
+      this.tablelist.push({ ...['总计', this.sizetab.itemb, this.sizeForm.sum, this.sizetab.itema, '——'] })
       for (let i = 0; i < bxlist.length; i++) {
         this.tablelistx.push({ ...bxlist[i] })
       }
-      this.tablelistx.push({ ...['总计', this.sizetab.itemd, this.sizeForm.sum, this.sizetab.itemc] })
+      this.tablelistx.push({ ...['总计', this.sizetab.itemd, this.sizeForm.sum, this.sizetab.itemc, '——'] })
       this.pandanplay()
     },
     // 点击重置按钮
@@ -488,7 +488,7 @@ export default {
       }
       .box-inter {
         width: 95% !important;
-        height: 1000px;
+        // height: 1000px;
         margin: 20px auto;
         border-radius: 20px 20px 0 0;
         border: 2px solid #ccc;
@@ -517,7 +517,7 @@ export default {
           .foritem {
             margin: 50px auto;
             padding: 0;
-            width: 50%;
+            width: 80%;
             .el-form {
               width: 100%;
               p {

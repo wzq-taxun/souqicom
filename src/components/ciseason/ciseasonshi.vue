@@ -356,7 +356,7 @@ export default {
     },
     // 调用 功能名称接口
     async getuserway() {
-      const { data: res } = await this.$http.get('souqi/admin/tools/add/')
+      const { data: res } = await this.$http.get('souqi/admin/tools/add/home/')
       if (res.status !== 0) return this.$message.warning(res.msg)
       for (let i = 0; i < res.results.length; i++) {
         res.results[i].newname = this.newoathlist

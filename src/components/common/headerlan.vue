@@ -62,7 +62,8 @@
               </div>
             </div>
             <span slot="reference">
-              应用<i class="el-icon-caret-bottom el-icon--right"></i>
+              应用
+              <i class="el-icon-caret-bottom el-icon--right"></i>
               <!-- <i style="color: #008bfe;" class="el-icon-s-platform" /> -->
             </span>
           </el-popover>
@@ -153,7 +154,7 @@ export default {
       // ishowkuai: false,
       // 接受功能数据
       signlist: [],
-      newoathlist: ['dkjsq', 'jsq', 'huilv']
+      newoathlist: ['dkjsq', 'jsq', 'huilv', 'fangdai']
       // iconlist: ['icon-daikuanlishuaitiaozhengbiao', 'icon-DVLINK_lishuaibaobei', 'icon-icon-test']
     }
   },
@@ -168,7 +169,7 @@ export default {
   methods: {
     // 调用 功能名称接口
     async getuserway() {
-      const { data: res } = await this.$http.get('souqi/admin/tools/add/')
+      const { data: res } = await this.$http.get('souqi/admin/tools/add/home/')
       if (res.status !== 0) return this.$message.warning(res.msg)
       for (let i = 0; i < res.results.length; i++) {
         res.results[i].newname = this.newoathlist
@@ -334,7 +335,7 @@ export default {
         .el-popover__reference {
           display: block;
           color: #fff;
-          width: 70px!important;
+          width: 70px !important;
         }
         .el-popover__reference:hover {
           color: #ffa500;

@@ -29,6 +29,18 @@
         <el-table-column type="index" :index="indexMethod" label="排序" width="450px"></el-table-column>
         <el-table-column label="工具名称" prop="tools_name"></el-table-column>
         <el-table-column label="阿里图标类名" prop="tool_taxon"></el-table-column>
+        <el-table-column label="是否显示">
+          <template slot-scope="scope">
+            <el-switch
+              disabled
+              v-model="scope.row.is_show"
+              active-text="显示"
+              inactive-text="隐藏"
+              active-color="#13ce66"
+              inactive-color="#ff4949"
+            ></el-switch>
+          </template>
+        </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button
@@ -67,6 +79,19 @@
         <el-form-item label="阿里图标类名" :label-width="formLabelWidth">
           <el-input v-model="form.alitubiao" autocomplete="off" placeholder="参考阿里图标库"></el-input>
         </el-form-item>
+        <el-form-item label="是否显示" :label-width="formLabelWidth">
+          <!-- <el-input v-model="form.alitubiao" autocomplete="off" placeholder="参考阿里图标库"></el-input> -->
+          <el-switch
+            v-model="value"
+            active-text="显示"
+            inactive-text="隐藏"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            active-value="1"
+            inactive-value="0"
+            @change="changegaibian()"
+          ></el-switch>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -88,6 +113,18 @@
         <el-form-item label="新图标类名" :label-width="formLabelWidth">
           <el-input v-model="form2.newalitu" placeholder="参考阿里图标库"></el-input>
         </el-form-item>
+        <el-form-item label="是否显示" :label-width="formLabelWidth">
+          <el-switch
+            v-model="value"
+            active-text="显示"
+            inactive-text="隐藏"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            active-value="1"
+            inactive-value="0"
+            @change="changegaibian()"
+          ></el-switch>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="upVisible=false">取 消</el-button>
@@ -102,6 +139,7 @@ export default {
   props: {},
   data() {
     return {
+      value: '0',
       // 查询参数对象
       queryInfo: {
         query: '',
@@ -143,6 +181,10 @@ export default {
   },
   watch: {},
   methods: {
+    // 控制工具是否显示
+    changegaibian() {
+      console.log(this.value)
+    },
     indexMethod(index) {
       return (this.queryInfo.pagenum - 1) * 10 + index + 1
     },
@@ -170,6 +212,7 @@ export default {
       const { data: res } = await this.$http.get('souqi/admin/tools/add/')
       if (res.status !== 0) return this.$message.warning(res.msg)
       this.$message.success('获取成功')
+      console.log(res)
       // 数据总条数
       this.total = parseInt(res.results.length)
       this.toolslistall = res.results
@@ -202,7 +245,7 @@ export default {
       if (this.form.name.trim() === '') return this.$message.warning('请输入工具名')
       if (this.form.alitubiao.trim() === '') return this.$message.warning('请输入图标类名')
       let newzhi = this.form.name
-      const { data: res } = await this.$http.post('souqi/admin/tools/add/', { tool_name: newzhi, tool_taxon: this.form.alitubiao })
+      const { data: res } = await this.$http.post('souqi/admin/tools/add/', { tool_name: newzhi, tool_taxon: this.form.alitubiao, is_show: this.value })
       if (res.status !== 1) return this.$message.warning(res.msg)
       this.$message.success('添加成功')
       this.getoollist()
@@ -222,7 +265,8 @@ export default {
       const { data: res } = await this.$http.post('souqi/admin/t_c/update/', {
         tools_id: this.oldid,
         tools_name: this.form2.newname,
-        tool_taxon: this.form2.newalitu
+        tool_taxon: this.form2.newalitu,
+        is_show: this.value
       })
       // console.log(res)
       if (res.status !== 1) return this.$message.warning(res.msg)

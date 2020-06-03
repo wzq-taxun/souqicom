@@ -69,7 +69,7 @@ export default {
     // // 页面创建前的赋值 线上版本
     this.codeImg = 'http://47.240.250.145:8000/souqi/admin/get_code/'
     // 线下版本
-    // this.codeImg = 'http://192.168.0.106:8000/souqi/admin/get_code/'
+    // this.codeImg = 'http://192.168.0.108:8000/souqi/admin/get_code/'
   },
   mounted() {},
   watch: {},
@@ -80,7 +80,7 @@ export default {
       // // 线上版本
       this.codeImg = `http://47.240.250.145:8000/souqi/admin/get_code/?${num}`
       // 线下版本
-      // this.codeImg = `http://192.168.0.106:8000/souqi/admin/get_code/?${num}`
+      // this.codeImg = `http://192.168.0.108:8000/souqi/admin/get_code/?${num}`
     },
     // 登录
     login() {

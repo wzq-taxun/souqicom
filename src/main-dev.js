@@ -21,7 +21,7 @@ import * as Quill from 'quill'
 import imageResize from 'quill-image-resize-module'
 Quill.register('modules/imageResize', imageResize)
 // 配置请求的跟路径
-axios.defaults.baseURL = 'http://192.168.0.106:8000/'
+axios.defaults.baseURL = 'http://192.168.0.108:8000/'
 // axios.defaults.baseURL = 'http://47.240.250.145:8000/'
 // 挂在到Vue原型对象上 可以通过this._proto_ == this.形式访问
 Vue.prototype.$http = axios

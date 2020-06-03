@@ -21,7 +21,6 @@ const Information = () => import(/* webpackChunkName: "group-nav" */ '@/componen
 const Subordinate = () => import(/* webpackChunkName: "group-nav" */ '@/components/infos/subordinate')
 const Addinfomation = () => import(/* webpackChunkName: "group-nav" */ '@/components/infos/addinfomation')
 const Strands = () => import(/* webpackChunkName: "group-nav" */ '@/components/infos/strands')
-
 // 前台
 
 // const Register = () => import(/* webpackChunkName: "group-head" */ '@/components/login/register')
@@ -44,6 +43,7 @@ const Hbjsq = () => import(/* webpackChunkName: "group-inter" */'@/components/co
 const Aboutinte = () => import(/* webpackChunkName: "group-inter" */ '@/components/commonuse/aboutinte')
 const Toolslistbook = () => import(/* webpackChunkName: "group-inter" */ '@/components/commonuse/toolslistbook')
 const Errorinfo = () => import(/* webpackChunkName: "group-inter" */ '@/components/errorinfo')
+const Housemony = () => import(/* webpackChunkName: "group-inter" */ '@/components/commonuse/housemony')
 Vue.use(VueRouter)
 // 简单配置
 NProgress.inc(0.2)
@@ -157,6 +157,11 @@ const routes = [
     path: '/toolslist:valtolid',
     name: 'toolslist',
     component: Toolslistbook
+  },
+  {
+    path: '/fangdai:commonpathid',
+    name: 'fangdai',
+    component: Housemony
   },
   // 404page
   {
